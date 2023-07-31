@@ -1,0 +1,77 @@
+{
+  "build_systems": [
+    {
+      "name": "CMake Configure",
+      "working_dir": "${folder}",
+      "shell_cmd": "truncate -s 0 $project_path/.cache.json && cmake --preset=\\$preset_name | tee >(grep \"Build files have been written to:\" | sed \"s/^.*: //\" | xargs -i jq -n --arg cached_build_folder {} '{env:{cached_build_folder: \\$cached_build_folder}}' > $project_path/.cache.json) && subl --command \"set_project_environment\" && subl --command \"lsp_restart_server\"",
+      "variants": [
+        {
+          "name": "Debug",
+          "env": {
+            "preset_name": "Debug",
+          },
+        },
+        {
+          "name": "Release",
+          "env": {
+            "preset_name": "Release",
+          },
+        },
+        {
+          "name": "RelWithDebInfo",
+          "env": {
+            "preset_name": "RelWithDebInfo",
+          },
+        },
+        {
+          "name": "Coverage",
+          "env": {
+            "preset_name": "Coverage",
+          },
+        }
+      ],
+    },
+    {
+      "name": "CMake Build",
+      "working_dir": "${folder}",
+      "shell_cmd": "echo \"Building \\$cached_build_folder\" && cmake --build \\$cached_build_folder",
+      "variants": [
+        {
+          "name": "Coverage",
+          "shell_cmd": "cmake --build --preset Coverage",
+        }
+      ],
+    }
+  ],
+  "folders": [
+    {
+      "path": "../",
+    }
+  ],
+  "settings": {
+    "project_environment": {
+      "print_output": true,
+      "set_sublime_variables": true,
+      "sublime_variables_prefix": "sublime_",
+      "env_file": "$sublime_project_path/.cache.json"
+    },
+    "LSP": {
+      "clangd": {
+        "initializationOptions": {
+          "clangd.compile-commands-dir": "build/debug",
+        },
+      },
+    },
+  },
+  "debugger_configurations":
+  [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Launch",
+      "program": "${folder}/build/debug/app/main",
+      "args": ["--interpreter=mi"],
+      "cwd": "${folder}/build/debug/app"
+    },
+	],
+}

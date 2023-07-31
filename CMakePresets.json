@@ -1,0 +1,108 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "generator": "Unix Makefiles",
+      "hidden": true,
+      "cacheVariables": {
+        "toolchain": "${sourceDir}/cmake/toolchains/gcc-linux-x86_64.cmake"
+      }
+    },
+    {
+      "name": "Debug",
+      "binaryDir": "${sourceDir}/build/debug",
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Coverage",
+      "binaryDir": "${sourceDir}/build/coverage",
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Coverage"
+      }
+    },
+    {
+      "name": "Release",
+      "binaryDir": "${sourceDir}/build/release",
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "RelWithDebInfo",
+      "binaryDir": "${sourceDir}/build/relWithDebInfo",
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Coverage",
+      "configurePreset": "Coverage",
+      "targets": [
+        "coverage"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug_unit_tests",
+      "displayName": "Debug Unit Tests",
+      "description": "Preset for ctest using the debug configuration",
+      "configurePreset": "Debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "release_unit_tests",
+      "displayName": "Release Unit Tests",
+      "description": "Preset for ctest using the release configuration",
+      "configurePreset": "Release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "RelWithDebInfo_unit_tests",
+      "displayName": "RelWithDebInfo Unit Tests",
+      "description": "Preset for ctest using the RelWithDebInfo configuration",
+      "configurePreset": "RelWithDebInfo",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    }
+  ]
+}
