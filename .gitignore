@@ -1,6 +1,9 @@
 # Build folder
 build
 
+# Project stuff
+.idea
+
 # doc stuff
 *.bkp
 *.dtmp

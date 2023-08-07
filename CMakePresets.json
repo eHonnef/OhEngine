@@ -11,7 +11,7 @@
       "generator": "Unix Makefiles",
       "hidden": true,
       "cacheVariables": {
-        "toolchain": "${sourceDir}/cmake/toolchains/gcc-linux-x86_64.cmake"
+        "toolchain": "${sourceDir}/cmake/toolchains/clang-linux-x86_64.cmake"
       }
     },
     {

@@ -1,9 +1,11 @@
 #include <OhEngine.hpp>
 
 class CSample : public OhEngine::CApplication {
-  public:
+public:
     CSample() : OhEngine::CApplication() {}
-    ~CSample() {}
+    ~CSample() override = default;
 };
 
-OhEngine::CApplication *OhEngine::CreateApplication() { return new CSample(); }
+OhEngine::CApplication *OhEngine::CreateApplication() {
+    return new CSample();
+}
