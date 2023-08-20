@@ -50,7 +50,7 @@ option(enable_lto "Enable link time optimization" OFF)
 option(
         enable_tests
         "Include tests in the library. Setting this to OFF will remove all doctest related code."
-        OFF)
+        ON)
 option(enable_documentation "Enable the documentation build" OFF)
 
 # --------------------------------------------------------------------------------
@@ -74,19 +74,19 @@ set(src_dir ${code_dir}/src)
 set(src_dir_engine ${src_dir}/OhEngine)
 # Where the headers files are located
 set(include_dir ${code_dir}/include)
+# platform dependent code
+set(platform_dir ${src_dir}/Platform/Linux)
 
 file(GLOB_RECURSE src_files CONFIGURE_DEPENDS "${src_dir_engine}/*.cpp")
 file(GLOB_RECURSE header_files CONFIGURE_DEPENDS "${include_dir}/*.hpp")
 
-# Individual files
-set(src_files "${src_files}"
-        ${src_dir}/Platform/Linux/SfmlWindow.cpp
-)
+# Platform dependent source files
+file(GLOB_RECURSE src_platform_files CONFIGURE_DEPENDS "${platform_dir}/*.cpp")
 
 # --------------------------------------------------------------------------------
 # Create code libraries
 # --------------------------------------------------------------------------------
-add_library(${PROJECT_NAME} OBJECT ${src_files})
+add_library(${PROJECT_NAME} OBJECT ${src_files} ${src_platform_files})
 add_library(${namespace}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_include_directories(
@@ -103,6 +103,8 @@ target_precompile_headers(${PROJECT_NAME} PUBLIC
 include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/thirdparty.cmake")
 target_set_warnings(sfml-graphics fmt DISABLE ALL)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/thirdparty/frozen/include)
+
 add_dependencies(${PROJECT_NAME} fmt::fmt sfml-graphics)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt sfml-graphics)
 
@@ -111,7 +113,7 @@ if (${cmake_build_type_tolower} STREQUAL "release" OR ${cmake_build_type_tolower
 endif ()
 
 if (${main_project})
-#    target_compile_options(${PROJECT_NAME} PRIVATE -fsafe-buffer-usage-suggestions)
+    #    target_compile_options(${PROJECT_NAME} PRIVATE -fsafe-buffer-usage-suggestions)
     target_set_warnings(${PROJECT_NAME} ENABLE ALL
             AS_ERROR ALL
             DISABLE Annoying)

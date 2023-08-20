@@ -1,7 +1,7 @@
 #pragma once
 
 #include <OhEngine/Utils/Precompiled.hpp>
-#include <functional>
+#include <OhEngine/Events/Input.hpp>
 
 namespace OhEngine {
     enum class EEventType {
@@ -26,7 +26,7 @@ namespace OhEngine {
     virtual constexpr EEventType GetEventType() const override {                                                       \
         return GetStaticType();                                                                                        \
     }
-    class CEventDispatcher;
+    class OHENGINE_PRIVATE CEventDispatcher;
     class CEvent {
     public:
         bool IsHandled() const {
@@ -46,13 +46,14 @@ namespace OhEngine {
         friend class CEventDispatcher;
     };
 
-    class IEventListener {
+    class OHENGINE_PRIVATE IEventListener {
     public:
         virtual ~IEventListener() = default;
         virtual void OnEvent(CEvent &Event) = 0;
+//        void
     };
 
-    class CEventDispatcher {
+    class OHENGINE_PRIVATE CEventDispatcher {
     private:
         template<typename T>
         using TEventFn = std::function<bool(T &)>;
@@ -70,5 +71,30 @@ namespace OhEngine {
             }
             return false;
         }
+    };
+
+    class OHENGINE_PUBLIC EventState {
+    public:
+        EventState(EventState const &) = delete;
+        void operator=(EventState const &) = delete;
+
+        static const IListView<Keyboard::SKey>& GetPressedKeys();
+        static const Mouse::SMousePosition& GetMousePosition();
+
+    private:
+        // list of keys
+        CList<Keyboard::SKey> m_lstPressedKeys;
+        // mouse position
+        Mouse::SMousePosition m_MousePos;
+        // mouse button pressed
+
+        static EventState &Instance();
+
+        EventState();
+        ~EventState();
+
+        void HandleEvent(CEvent &Event);
+
+        friend class CWindow; // Forward declaration to Window class
     };
 }  // namespace OhEngine

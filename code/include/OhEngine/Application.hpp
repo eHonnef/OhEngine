@@ -17,7 +17,8 @@ namespace OhEngine {
 
         void OnEvent(CEvent& Event) override;
         bool OnWindowClose(CWindowCloseEvent &e);
-        bool OnMouseMove(CMouseMovedEvent &e);
+        bool OnKeyPressed(CKeyPressedEvent &e);
+        bool OnKeyReleased(CKeyReleasedEvent &e);
     };
 
     CApplication *CreateApplication();

@@ -2,6 +2,10 @@
 #include <SFML/Graphics.hpp>
 
 namespace OhEngine {
+    /**
+     * Class that implements the window itself.
+     * This way we can hide the underlying windowing system and the user doesn't need to compile it himself.
+     */
     class CWindow::CWindowImpl : private sf::RenderWindow {
     private:
         IEventListener &m_EventsListener;
@@ -12,6 +16,8 @@ namespace OhEngine {
             sf::RenderWindow(sf::VideoMode(uWidth, uHeight), strName),
             m_EventsListener{EventsListener} {
             this->setVerticalSyncEnabled(true);  // this will use the monitor's refresh rate
+
+            // @todo: check the status of key pressed + mouse position on window startup
         }
 
         void SetVSync(bool bEnable) {
@@ -31,25 +37,35 @@ namespace OhEngine {
                     CWindowResizeEvent event{WindowEvent.size.width, WindowEvent.size.height};
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::KeyPressed) {
-                    CKeyPressedEvent event{WindowEvent.key.scancode, WindowEvent.key.code,  1,
-                                           WindowEvent.key.alt,      WindowEvent.key.shift, WindowEvent.key.control};
+                    CKeyPressedEvent event{Keyboard::ToScancode(WindowEvent.key.scancode),
+                                           Keyboard::ToKeycode(WindowEvent.key.code),
+                                           1,
+                                           WindowEvent.key.alt,
+                                           WindowEvent.key.shift,
+                                           WindowEvent.key.control};
+                    EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::KeyReleased) {
-                    CKeyReleasedEvent event{WindowEvent.key.scancode, WindowEvent.key.code};
+                    CKeyReleasedEvent event{Keyboard::ToScancode(WindowEvent.key.scancode),
+                                            Keyboard::ToKeycode(WindowEvent.key.code)};
+                    EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseButtonPressed) {
                     CMouseBtnPressedEvent event{WindowEvent.mouseButton.button,
                                                 static_cast<float>(WindowEvent.mouseButton.x),
                                                 static_cast<float>(WindowEvent.mouseButton.y)};
+                    EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseButtonReleased) {
                     CMouseBtnReleasedEvent event{WindowEvent.mouseButton.button,
                                                  static_cast<float>(WindowEvent.mouseButton.x),
                                                  static_cast<float>(WindowEvent.mouseButton.y)};
+                    EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseMoved) {
                     CMouseMovedEvent event{static_cast<float>(WindowEvent.mouseMove.x),
                                            static_cast<float>(WindowEvent.mouseMove.y)};
+                    EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseWheelScrolled) {
                     CMouseScrolledEvent event{static_cast<float>(WindowEvent.mouseWheelScroll.x),
@@ -62,6 +78,10 @@ namespace OhEngine {
             this->display();
         }
     };
+
+    /*******************************************************************************************************************
+     * Window facade class
+     ******************************************************************************************************************/
 
     CWindow::CWindow(IEventListener &EventsListener) :
         m_EventsListener{EventsListener}, m_pImpl{std::make_unique<CWindowImpl>(800, 600, "blah", EventsListener)} {

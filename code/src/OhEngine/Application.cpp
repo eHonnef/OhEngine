@@ -4,7 +4,10 @@
 
 namespace OhEngine {
 
-#define BIND_EVENT_FN(x) [this](auto && PH1) { return x(std::forward<decltype(PH1)>(PH1)); }
+#define BIND_EVENT_FN(x)                                                                                               \
+    [this](auto &&PH1) {                                                                                               \
+        return x(std::forward<decltype(PH1)>(PH1));                                                                    \
+    }
 
     CApplication::CApplication() {
         m_bRunning = true;
@@ -24,9 +27,8 @@ namespace OhEngine {
     void CApplication::OnEvent(CEvent &Event) {
         CEventDispatcher d(Event);
         d.Dispatch<CWindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-        d.Dispatch<CMouseMovedEvent>(BIND_EVENT_FN(OnMouseMove));
-
-        TRACE("{}", Event.IsHandled())
+        d.Dispatch<CKeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
+        d.Dispatch<CKeyReleasedEvent>(BIND_EVENT_FN(OnKeyReleased));
     }
 
     bool CApplication::OnWindowClose([[__maybe_unused__]] CWindowCloseEvent &e) {
@@ -34,9 +36,13 @@ namespace OhEngine {
         return true;
     }
 
-    bool CApplication::OnMouseMove(CMouseMovedEvent &e) {
-        TRACE(e.ToString())
+    bool CApplication::OnKeyPressed(CKeyPressedEvent &e) {
+        OHENGINE_TRACE(e.ToString())
+        return true;
+    }
+    bool CApplication::OnKeyReleased(CKeyReleasedEvent &e) {
+        OHENGINE_TRACE(e.ToString())
         return true;
     }
 
-} // namespace OhEngine
+}  // namespace OhEngine

@@ -1,59 +1,48 @@
 #pragma once
 
+//#include <OhEngine/Events/Input.hpp>
 #include <OhEngine/Events/EventBase.hpp>
 
 namespace OhEngine {
-    class CKeyPressedEvent : public CEvent {
+    class OHENGINE_PUBLIC CKeyPressedEvent : public CEvent {
     public:
-        struct SKey {
-            int KeyScanCode;
-            int KeyCode;
-            int RepeatCount;
-            bool AltKeyStatus;
-            bool ShiftKeyStatus;
-            bool CtrlKeyStatus;
-            SKey(int nKeyScanCode, int nKeyCode, int nRepeatCount, bool bAltKeyStatus, bool bShiftKeyStatus,
-                 bool bCtrlKeyStatus) :
-                KeyScanCode(nKeyScanCode),
-                KeyCode(nKeyCode), RepeatCount(nRepeatCount), AltKeyStatus(bAltKeyStatus),
-                ShiftKeyStatus(bShiftKeyStatus), CtrlKeyStatus(bCtrlKeyStatus) {}
-        };
+        CKeyPressedEvent(Keyboard::KeyScancode KeyScanCode, Keyboard::Key KeyCode, int nRepeatCount, bool bAltKeyStatus,
+                         bool bShiftKeyStatus, bool bCtrlKeyStatus) :
+            m_KeyStruct{KeyScanCode, KeyCode, nRepeatCount, bAltKeyStatus, bShiftKeyStatus, bCtrlKeyStatus} {}
 
-        CKeyPressedEvent(int nKeyScanCode, int nKeyCode, int nRepeatCount, bool bAltKeyStatus, bool bShiftKeyStatus,
-                         bool bCtrlKeyStatus) :
-            m_KeyStruct(nKeyScanCode, nKeyCode, nRepeatCount, bAltKeyStatus, bShiftKeyStatus, bCtrlKeyStatus) {}
+        explicit CKeyPressedEvent(const Keyboard::SKey &KeyParams) : m_KeyStruct{KeyParams} {}
 
-        explicit CKeyPressedEvent(const SKey &KeyParams) : m_KeyStruct{KeyParams} {}
-
-        inline const SKey &GetKeyProperties() const {
+        inline const Keyboard::SKey &GetKeyProperties() const {
             return m_KeyStruct;
         }
 
         std::string ToString() const override {
             return fmt::format(
-              "KeyPressedEvent: {:#x}; ScanCode: {:#x}; Repeat: {}; AltPressed: {}; ShiftKey: {}; CtrlKey: {};",
-              m_KeyStruct.KeyCode, m_KeyStruct.KeyScanCode, m_KeyStruct.RepeatCount, m_KeyStruct.AltKeyStatus,
-              m_KeyStruct.ShiftKeyStatus, m_KeyStruct.CtrlKeyStatus);
+              "KeyPressedEvent: KeyCode={:#x}; ScanCode={:#x}; Repeat={}; AltPressed={}; ShiftKey={}; CtrlKey={};",
+              static_cast<int>(m_KeyStruct.KeyCode), static_cast<int>(m_KeyStruct.KeyScanCode), m_KeyStruct.RepeatCount,
+              m_KeyStruct.AltKeyStatus, m_KeyStruct.ShiftKeyStatus, m_KeyStruct.CtrlKeyStatus);
         }
 
         EVENT_CLASS_TYPE(EEventType::KeyPressed)
 
     private:
-        SKey m_KeyStruct;
+        Keyboard::SKey m_KeyStruct;
     };
 
-    class CKeyReleasedEvent : public CEvent {
+    class OHENGINE_PUBLIC CKeyReleasedEvent : public CEvent {
     public:
-        CKeyReleasedEvent(int nKeyScanCode, int nKeyCode) : m_nKeyScanCode(nKeyScanCode), m_nKeyCode(nKeyCode) {}
+        CKeyReleasedEvent(Keyboard::KeyScancode KeyScanCode, Keyboard::Key KeyCode) :
+            m_KeyScanCode{KeyScanCode}, m_KeyCode{KeyCode} {}
 
         std::string ToString() const override {
-            return fmt::format("KeyReleasedEvent: KeyCode={:#x}; KeyScanCode={:#x};", m_nKeyCode, m_nKeyScanCode);
+            return fmt::format("KeyReleasedEvent: KeyCode={:#x}; KeyScanCode={:#x};", static_cast<int>(m_KeyCode),
+                               static_cast<int>(m_KeyScanCode));
         }
 
         EVENT_CLASS_TYPE(EEventType::KeyReleased)
 
     private:
-        int m_nKeyScanCode;
-        int m_nKeyCode;
+        Keyboard::KeyScancode m_KeyScanCode;
+        Keyboard::Key m_KeyCode;
     };
-} // namespace OhEngine
+}  // namespace OhEngine

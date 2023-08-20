@@ -9,40 +9,40 @@ namespace OhEngine {
 #define ENABLE_ALL_LOGS 0
 #define LOGLEVEL 0
 
-#define TRACE(...)                                                                                                     \
+#define OHENGINE_TRACE(...)                                                                                                     \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Trace(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define DEBUG(...)                                                                                                     \
+#define OHENGINE_DEBUG(...)                                                                                                     \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Debug(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define INFO(...)                                                                                                      \
+#define OHENGINE_INFO(...)                                                                                                      \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Info(__FILE__, __func__, __VA_ARGS__);                                                                 \
     }
-#define IMPORTANT(...)                                                                                                 \
+#define OHENGINE_IMPORTANT(...)                                                                                                 \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Important(__FILE__, __func__, __VA_ARGS__);                                                            \
     }
-#define WARNING(...)                                                                                                   \
+#define OHENGINE_WARNING(...)                                                                                                   \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Warning(__FILE__, __func__, __VA_ARGS__);                                                              \
     }
-#define ERROR(...)                                                                                                     \
+#define OHENGINE_ERROR(...)                                                                                                     \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Error(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define CRITICAL(...)                                                                                                  \
+#define OHENGINE_CRITICAL(...)                                                                                                  \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Critical(__FILE__, __func__, __VA_ARGS__);                                                             \
     }
-#define FATAL(...)                                                                                                     \
+#define OHENGINE_FATAL(...)                                                                                                     \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Fatal(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
 
-    class Logger {
+    class OHENGINE_PRIVATE Logger {
     public:
         template<typename... Args>
         static void Trace(const std::string &strFileName, const std::string &strFnName, const std::string &str,
@@ -118,8 +118,7 @@ namespace OhEngine {
             using namespace std::chrono;
             std::chrono::sys_time<nanoseconds> now = (std::chrono::system_clock::now());
             auto round_now = std::chrono::round<milliseconds>(now);
-            auto ms = (round_now.time_since_epoch() % seconds(1)).count();
-            return fmt::format("{:%Y-%m-%d %H:%M:%S}.{:04}", now, ms);
+            return fmt::format("{:%Y-%m-%d %H:%M:%S}", now);
         }
 
         template<ELogLevel LL>

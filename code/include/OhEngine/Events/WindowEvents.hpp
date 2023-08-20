@@ -3,7 +3,7 @@
 #include <OhEngine/Events/EventBase.hpp>
 
 namespace OhEngine {
-    class CWindowResizeEvent : public CEvent {
+    class OHENGINE_PUBLIC CWindowResizeEvent : public CEvent {
     public:
         CWindowResizeEvent(size_t uWidth, size_t uHeight) : m_uWidth(uWidth), m_uHeight(uHeight) {}
 
@@ -25,7 +25,7 @@ namespace OhEngine {
         size_t m_uWidth, m_uHeight;
     };
 
-    class CWindowCloseEvent : public CEvent {
+    class OHENGINE_PUBLIC CWindowCloseEvent : public CEvent {
     public:
         CWindowCloseEvent() = default;
 

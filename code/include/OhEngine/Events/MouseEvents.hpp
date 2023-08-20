@@ -3,28 +3,33 @@
 #include <OhEngine/Events/EventBase.hpp>
 
 namespace OhEngine {
-    class CMouseMovedEvent : public CEvent {
+    class OHENGINE_PUBLIC CMouseMovedEvent : public CEvent {
     public:
-        CMouseMovedEvent(float fX, float fY) : m_fMouseX(fX), m_fMouseY(fY) {}
+        CMouseMovedEvent(float fX, float fY) : m_MousePos(fX, fY) {}
 
         inline float GetX() const {
-            return m_fMouseX;
+            return m_MousePos.x;
         }
+
         inline float GetY() const {
-            return m_fMouseY;
+            return m_MousePos.y;
+        }
+
+        inline const Mouse::SMousePosition &GetMousePos() const {
+            return m_MousePos;
         }
 
         std::string ToString() const override {
-            return fmt::format("MouseMovedEvent: [{:.4}, {:.4}];", m_fMouseX, m_fMouseY);
+            return fmt::format("MouseMovedEvent: [{:.4}, {:.4}];", GetX(), GetY());
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseMoved)
 
     private:
-        float m_fMouseX, m_fMouseY;
+        Mouse::SMousePosition m_MousePos;
     };
 
-    class CMouseScrolledEvent : public CEvent {
+    class OHENGINE_PUBLIC CMouseScrolledEvent : public CEvent {
     public:
         CMouseScrolledEvent(float fOffsetX, float fOffsetY) : m_fOffsetX(fOffsetX), m_fOffsetY(fOffsetY) {}
 
@@ -46,44 +51,48 @@ namespace OhEngine {
         float m_fOffsetX, m_fOffsetY;
     };
 
-    class CMouseBtnEvent : public CEvent {
+    class OHENGINE_PRIVATE CMouseBtnEvent : public CEvent {
     public:
         inline int GetMouseBtn() const {
             return m_nBtn;
         }
 
         inline float GetX() const {
-            return m_fX;
+            return m_MousePos.x;
         }
 
         inline float GetY() const {
-            return m_fY;
+            return m_MousePos.x;
+        }
+
+        inline const Mouse::SMousePosition &GetMousePos() const {
+            return m_MousePos;
         }
 
     protected:
-        explicit CMouseBtnEvent(int nBtn, float fX, float fY) : m_nBtn(nBtn), m_fX(fX), m_fY(fY) {}
+        explicit CMouseBtnEvent(int nBtn, float fX, float fY) : m_nBtn(nBtn), m_MousePos(fX, fY) {}
 
         int m_nBtn;
-        float m_fX, m_fY;
+        Mouse::SMousePosition m_MousePos;
     };
 
-    class CMouseBtnPressedEvent : public CMouseBtnEvent {
+    class OHENGINE_PUBLIC CMouseBtnPressedEvent : public CMouseBtnEvent {
     public:
         CMouseBtnPressedEvent(int nBtn, float fX, float fY) : CMouseBtnEvent(nBtn, fX, fY) {}
 
         std::string ToString() const override {
-            return fmt::format("MouseButtonPressedEvent: {:#x};", m_nBtn);
+            return fmt::format("MouseButtonPressedEvent: x={:.4}; y={:.4}; {:#x};", GetX(), GetY(), m_nBtn);
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseBtnPressed)
     };
 
-    class CMouseBtnReleasedEvent : public CMouseBtnEvent {
+    class OHENGINE_PUBLIC CMouseBtnReleasedEvent : public CMouseBtnEvent {
     public:
         CMouseBtnReleasedEvent(int nBtn, float fX, float fY) : CMouseBtnEvent(nBtn, fX, fY) {}
 
         std::string ToString() const override {
-            return fmt::format("MouseButtonPressedEvent: {:#x};", m_nBtn);
+            return fmt::format("MouseButtonReleasedEvent: x={:.4}; y={:.4}; {:#x};", GetX(), GetY(), m_nBtn);
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseBtnReleased)
