@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #include <OhEngine/Application.hpp>
 #include <OhEngine/Events/Events.hpp>
 #include <OhEngine/Utils/Logger.hpp>
@@ -40,6 +46,7 @@ namespace OhEngine {
         OHENGINE_TRACE(e.ToString())
         return true;
     }
+
     bool CApplication::OnKeyReleased(CKeyReleasedEvent &e) {
         OHENGINE_TRACE(e.ToString())
         return true;

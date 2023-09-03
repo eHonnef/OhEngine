@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #pragma once
 
 #include <cstddef>
@@ -6,38 +12,42 @@
 #include <fmt/core.h>
 
 namespace OhEngine {
+#ifndef ENABLE_ALL_LOGS
 #define ENABLE_ALL_LOGS 0
-#define LOGLEVEL 0
+#endif
+#ifndef LOGLEVEL
+#define LOGLEVEL Logger::ELogLevel::llTrace
+#endif
 
-#define OHENGINE_TRACE(...)                                                                                                     \
+#define OHENGINE_TRACE(...)                                                                                            \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Trace(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define OHENGINE_DEBUG(...)                                                                                                     \
+#define OHENGINE_DEBUG(...)                                                                                            \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Debug(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define OHENGINE_INFO(...)                                                                                                      \
+#define OHENGINE_INFO(...)                                                                                             \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Info(__FILE__, __func__, __VA_ARGS__);                                                                 \
     }
-#define OHENGINE_IMPORTANT(...)                                                                                                 \
+#define OHENGINE_IMPORTANT(...)                                                                                        \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Important(__FILE__, __func__, __VA_ARGS__);                                                            \
     }
-#define OHENGINE_WARNING(...)                                                                                                   \
+#define OHENGINE_WARNING(...)                                                                                          \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Warning(__FILE__, __func__, __VA_ARGS__);                                                              \
     }
-#define OHENGINE_ERROR(...)                                                                                                     \
+#define OHENGINE_ERROR(...)                                                                                            \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Error(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
-#define OHENGINE_CRITICAL(...)                                                                                                  \
+#define OHENGINE_CRITICAL(...)                                                                                         \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Critical(__FILE__, __func__, __VA_ARGS__);                                                             \
     }
-#define OHENGINE_FATAL(...)                                                                                                     \
+#define OHENGINE_FATAL(...)                                                                                            \
     if constexpr (LOG_MODULE) {                                                                                        \
         Logger::Fatal(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
@@ -184,4 +194,4 @@ namespace OhEngine {
         Logger(Logger const &) = delete;
         void operator=(Logger const &) = delete;
     };
-}// namespace OhEngine
+}  // namespace OhEngine

@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #pragma once
 
 namespace OhEngine {
@@ -280,24 +286,78 @@ namespace OhEngine {
                 KeyScanCode{keyScanCode},
                 KeyCode{keyCode}, RepeatCount(nRepeatCount), AltKeyStatus(bAltKeyStatus),
                 ShiftKeyStatus(bShiftKeyStatus), CtrlKeyStatus(bCtrlKeyStatus) {}
+
+            std::string ToString() const {
+                return fmt::format("KeyCode={:#x}; ScanCode={:#x}; Repeat={}; AltPressed={}; ShiftKey={}; CtrlKey={};",
+                                   static_cast<int>(KeyCode), static_cast<int>(KeyScanCode), RepeatCount, AltKeyStatus,
+                                   ShiftKeyStatus, CtrlKeyStatus);
+            }
         };
 
-        static KeyScancode GetScancode(Key key);
-        static Key GetKeycode(KeyScancode keyScancode);
+        /**
+         * Translates a Keyboard::Key code to Keyboard::KeyScancode
+         * @param key - the Key code from Keyboard::Key
+         * @return The corresponding Keyboard::KeyScancode.
+         */
+        static KeyScancode ToScancode(Key key);
+        /**
+         * Translates an integer to Keyboard::KeyScancode
+         * @param nKeyScancode - an integer to transform into Keyboard::KeyScancode
+         * @return The corresponding Keyboard::KeyScancode.
+         */
         static KeyScancode ToScancode(int nKeyScancode);
+
+        /**
+         * Translates a Keyboard::KeyScancode code to Keyboard::Key code
+         * @param keyScancode - the Key scan code from Keyboard::KeyScancode
+         * @return The corresponding Keyboard::Key.
+         */
+        static Key ToKeycode(KeyScancode keyScancode);
+        /**
+         * Translates an integer to Keyboard::Key
+         * @param nKey - an integer to transform into Keyboard::Key
+         * @return The corresponding Keyboard::Key.
+         */
         static Key ToKeycode(int nKey);
+
         static std::string_view GetKeyDescription(KeyScancode Key);
+
+        Keyboard(Keyboard const &) = delete;
+        void operator=(Keyboard const &) = delete;
     };
 
-    class Mouse {
+    class OHENGINE_PUBLIC Mouse {
     public:
+        enum class Button {
+            Unknown = -1,  // Unhandled mouse button
+            Left = 0,      // The left mouse button
+            Right,         // The right mouse button
+            Middle,        // The middle (wheel) mouse button
+            XButton1,      // The first extra mouse button
+            XButton2,      // The second extra mouse button
+
+            ButtonCount  // Keep last -- the total number of mouse buttons
+        };
+
         struct SMousePosition {
             float x;
             float y;
             std::string ToString() const {
-                return fmt::format("MousePos: x={:.4}; y={:.4}", x, y);
+                return fmt::format("Mouse_X={:.4}; Mouse_Y={:.4}", x, y);
             }
             SMousePosition(float fX, float fY) : x{fX}, y{fY} {}
         };
+
+        /**
+         * Translates an integer to Mouse::Button
+         * @param nButton - an integer to transform into Mouse::Button
+         * @return The corresponding Mouse::Button.
+         */
+        static Button ToButton(int nButton);
+
+        static std::string_view GetButtonDescription(Button Btn);
+
+        Mouse(Mouse const &) = delete;
+        void operator=(Mouse const &) = delete;
     };
 }  // namespace OhEngine

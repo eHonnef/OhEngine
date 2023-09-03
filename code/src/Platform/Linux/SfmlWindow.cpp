@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #include <OhEngine/Window/Window.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -51,13 +57,13 @@ namespace OhEngine {
                     EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseButtonPressed) {
-                    CMouseBtnPressedEvent event{WindowEvent.mouseButton.button,
+                    CMouseBtnPressedEvent event{Mouse::ToButton(WindowEvent.mouseButton.button),
                                                 static_cast<float>(WindowEvent.mouseButton.x),
                                                 static_cast<float>(WindowEvent.mouseButton.y)};
                     EventState::Instance().HandleEvent(event);
                     m_EventsListener.OnEvent(event);
                 } else if (WindowEvent.type == sf::Event::EventType::MouseButtonReleased) {
-                    CMouseBtnReleasedEvent event{WindowEvent.mouseButton.button,
+                    CMouseBtnReleasedEvent event{Mouse::ToButton(WindowEvent.mouseButton.button),
                                                  static_cast<float>(WindowEvent.mouseButton.x),
                                                  static_cast<float>(WindowEvent.mouseButton.y)};
                     EventState::Instance().HandleEvent(event);

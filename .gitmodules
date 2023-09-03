@@ -4,3 +4,6 @@
 [submodule "thirdparty/frozen"]
 	path = thirdparty/frozen
 	url = https://github.com/serge-sans-paille/frozen.git
+[submodule "thirdparty/SFML"]
+	path = thirdparty/SFML
+	url = https://github.com/SFML/SFML.git

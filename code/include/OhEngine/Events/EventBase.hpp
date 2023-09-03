@@ -1,7 +1,13 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #pragma once
 
-#include <OhEngine/Utils/Precompiled.hpp>
 #include <OhEngine/Events/Input.hpp>
+#include <OhEngine/Utils/Precompiled.hpp>
 
 namespace OhEngine {
     enum class EEventType {
@@ -50,7 +56,6 @@ namespace OhEngine {
     public:
         virtual ~IEventListener() = default;
         virtual void OnEvent(CEvent &Event) = 0;
-//        void
     };
 
     class OHENGINE_PRIVATE CEventDispatcher {
@@ -79,14 +84,18 @@ namespace OhEngine {
         void operator=(EventState const &) = delete;
 
         static const IListView<Keyboard::SKey>& GetPressedKeys();
+        static const IListView<Mouse::Button>& GetPressedMouseButtons();
         static const Mouse::SMousePosition& GetMousePosition();
 
     private:
+        [[maybe_unused]] static constexpr bool LOG_MODULE = true || ENABLE_ALL_LOGS;
+
         // list of keys
         CList<Keyboard::SKey> m_lstPressedKeys;
         // mouse position
         Mouse::SMousePosition m_MousePos;
-        // mouse button pressed
+        // list of mouse button pressed
+        CList<Mouse::Button> m_lstPressedMouseButtons;
 
         static EventState &Instance();
 

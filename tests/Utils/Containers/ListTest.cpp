@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #include "doctest/doctest.h"
 #include <OhEngine/Utils/Precompiled.hpp>
 
@@ -24,13 +30,21 @@ TEST_CASE("List testings") {
 
     CHECK(lst.Size() == 5);
 
+    lst.Assign(0, 2);
+    CHECK(lst.At(0) == 2);
+
+    lst.Assign(lst.Size() + 5, 0);
+    CHECK(lst.At(lst.Size() - 1) == 0);
+    
+    CHECK(lst.Pop() == 0);
+
     CHECK(lst.Pop() == 6);
     CHECK(lst.Size() == 4);
 
     CHECK(lst.Pop(10) == 5);
     CHECK(lst.Size() == 3);
 
-    CHECK(lst.Pop(0) == 3);
+    CHECK(lst.Pop(0) == 2);
     CHECK(lst.Size() == 2);
 
     CHECK(lst.Pop(0) == 4);

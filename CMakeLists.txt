@@ -78,7 +78,6 @@ set(include_dir ${code_dir}/include)
 set(platform_dir ${src_dir}/Platform/Linux)
 
 file(GLOB_RECURSE src_files CONFIGURE_DEPENDS "${src_dir_engine}/*.cpp")
-file(GLOB_RECURSE header_files CONFIGURE_DEPENDS "${include_dir}/*.hpp")
 
 # Platform dependent source files
 file(GLOB_RECURSE src_platform_files CONFIGURE_DEPENDS "${platform_dir}/*.cpp")
@@ -100,10 +99,12 @@ target_precompile_headers(${PROJECT_NAME} PUBLIC
         ${include_dir}/OhEngine/Events/Events.hpp
 )
 
+# Including 3rd party items
 include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/thirdparty.cmake")
-target_set_warnings(sfml-graphics fmt DISABLE ALL)
+target_set_warnings(fmt sfml-graphics DISABLE ALL)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/thirdparty/frozen/include)
+set_directory_properties(${CMAKE_CURRENT_LIST_DIR}/thirdparty/frozen PRIVATE -w)
 
 add_dependencies(${PROJECT_NAME} fmt::fmt sfml-graphics)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt sfml-graphics)

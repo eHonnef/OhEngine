@@ -1,7 +1,13 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #pragma once
 
-//#include <OhEngine/Events/Input.hpp>
 #include <OhEngine/Events/EventBase.hpp>
+#include <OhEngine/Events/Input.hpp>
 
 namespace OhEngine {
     class OHENGINE_PUBLIC CKeyPressedEvent : public CEvent {
@@ -17,10 +23,7 @@ namespace OhEngine {
         }
 
         std::string ToString() const override {
-            return fmt::format(
-              "KeyPressedEvent: KeyCode={:#x}; ScanCode={:#x}; Repeat={}; AltPressed={}; ShiftKey={}; CtrlKey={};",
-              static_cast<int>(m_KeyStruct.KeyCode), static_cast<int>(m_KeyStruct.KeyScanCode), m_KeyStruct.RepeatCount,
-              m_KeyStruct.AltKeyStatus, m_KeyStruct.ShiftKeyStatus, m_KeyStruct.CtrlKeyStatus);
+            return fmt::format("KeyPressedEvent: {}", m_KeyStruct.ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::KeyPressed)
@@ -37,6 +40,14 @@ namespace OhEngine {
         std::string ToString() const override {
             return fmt::format("KeyReleasedEvent: KeyCode={:#x}; KeyScanCode={:#x};", static_cast<int>(m_KeyCode),
                                static_cast<int>(m_KeyScanCode));
+        }
+
+        inline const Keyboard::KeyScancode &GetKeyScanCode() const {
+            return m_KeyScanCode;
+        }
+
+        inline const Keyboard::Key &GetKeyCode() const {
+            return m_KeyCode;
         }
 
         EVENT_CLASS_TYPE(EEventType::KeyReleased)

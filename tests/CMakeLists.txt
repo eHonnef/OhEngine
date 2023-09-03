@@ -13,23 +13,21 @@ set(TEST_RUNNER_PARAMS "") # Any arguments to feed the test runner
 # --------------------------------------------------------------------------------
 add_executable(${TEST_MAIN} ${test_src_files})
 add_dependencies(${TEST_MAIN} ${namespace}::${PROJECT_NAME})
-target_link_libraries(${TEST_MAIN} PRIVATE ${namespace}::${PROJECT_NAME}
-                                           doctest)
+
+target_link_libraries(${TEST_MAIN} PRIVATE ${namespace}::${PROJECT_NAME} doctest)
+
 set_target_properties(${TEST_MAIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                              ${PROJECT_BINARY_DIR})
-target_set_warnings(
-  ${TEST_MAIN}
-  ENABLE
-  ALL
-  AS_ERROR
-  ALL
-  DISABLE
-  Annoying) # Set warnings (if needed).
+        ${PROJECT_BINARY_DIR})
+
+#target_compile_options(${TEST_MAIN} PRIVATE -Wall -Wpedantic -Werror)
+target_set_warnings(${TEST_MAIN} ENABLE ALL
+        AS_ERROR ALL
+        DISABLE Annoying) # Set warnings (if needed).
 
 add_test(
-  # Use some per-module/project prefix so that it is easier to run only tests
-  # for this module
-  NAME ${PROJECT_NAME}.${TEST_MAIN} COMMAND ${TEST_MAIN} ${TEST_RUNNER_PARAMS})
+        # Use some per-module/project prefix so that it is easier to run only tests
+        # for this module
+        NAME ${PROJECT_NAME}.${TEST_MAIN} COMMAND ${TEST_MAIN} ${TEST_RUNNER_PARAMS})
 
 # Adds a 'coverage' target.
 include(CodeCoverage)
