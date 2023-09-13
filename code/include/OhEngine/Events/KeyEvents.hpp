@@ -6,8 +6,8 @@
 
 #pragma once
 
+#include <OhEngine/Core/Input.hpp>
 #include <OhEngine/Events/EventBase.hpp>
-#include <OhEngine/Events/Input.hpp>
 
 namespace OhEngine {
     class OHENGINE_PUBLIC CKeyPressedEvent : public CEvent {

@@ -75,7 +75,7 @@ set(src_dir_engine ${src_dir}/OhEngine)
 # Where the headers files are located
 set(include_dir ${code_dir}/include)
 # platform dependent code
-set(platform_dir ${src_dir}/Platform/Linux)
+set(platform_dir ${src_dir}/Platform/SFML)
 
 file(GLOB_RECURSE src_files CONFIGURE_DEPENDS "${src_dir_engine}/*.cpp")
 

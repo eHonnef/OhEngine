@@ -4,8 +4,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "OhEngine/Core/Input.hpp"
 #include "doctest/doctest.h"
-#include <OhEngine/Events/Input.hpp>
 
 TEST_CASE("Keyboard Keyboard::Key code translation testings") {
     using namespace OhEngine;

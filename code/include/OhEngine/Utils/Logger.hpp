@@ -12,11 +12,15 @@
 #include <fmt/core.h>
 
 namespace OhEngine {
-#ifndef ENABLE_ALL_LOGS
-#define ENABLE_ALL_LOGS 0
+#ifndef OHENGINE_ENABLE_ALL_LOGS
+#define OHENGINE_ENABLE_ALL_LOGS 0
 #endif
-#ifndef LOGLEVEL
-#define LOGLEVEL Logger::ELogLevel::llTrace
+#ifndef NDEBUG
+#ifndef OHENGINE_LOGLEVEL
+#define OHENGINE_LOGLEVEL Logger::ELogLevel::llTrace
+#endif
+#else
+#define OHENGINE_LOGLEVEL Logger::ELogLevel::llNone
 #endif
 
 #define OHENGINE_TRACE(...)                                                                                            \
@@ -114,7 +118,7 @@ namespace OhEngine {
         template<ELogLevel LL, typename... Args>
         static void Print(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            if constexpr (static_cast<size_t>(LL) >= LOGLEVEL) {
+            if constexpr (static_cast<size_t>(LL) >= OHENGINE_LOGLEVEL) {
                 fmt::print(Color<LL>(),
                            FormatMessage<LL>(
                              strFileName.substr(strFileName.find_last_of('/', std::string::npos) == std::string::npos

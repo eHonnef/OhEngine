@@ -4,6 +4,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #pragma once
 
 #include <OhEngine/Window/Window.hpp>
@@ -17,7 +23,7 @@ namespace OhEngine {
         void Run();
 
     protected:
-        [[maybe_unused]] static constexpr bool LOG_MODULE = true || ENABLE_ALL_LOGS;
+        [[maybe_unused]] static constexpr bool LOG_MODULE = true || OHENGINE_ENABLE_ALL_LOGS;
 
         bool m_bRunning;
 
@@ -28,4 +34,4 @@ namespace OhEngine {
     };
 
     CApplication *CreateApplication();
-};  // namespace OhEngine
+}  // namespace OhEngine

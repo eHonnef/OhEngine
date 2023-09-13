@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <OhEngine/Core/Application.hpp>
+#include <OhEngine/Core/Keyboard.hpp>
+#include <OhEngine/Core/Mouse.hpp>
 
-// ---------
-
-#include <OhEngine/Core/Entry.hpp>
+namespace OhEngine {}  // namespace OhEngine

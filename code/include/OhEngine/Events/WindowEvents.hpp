@@ -11,24 +11,28 @@
 namespace OhEngine {
     class OHENGINE_PUBLIC CWindowResizeEvent : public CEvent {
     public:
-        CWindowResizeEvent(size_t uWidth, size_t uHeight) : m_uWidth(uWidth), m_uHeight(uHeight) {}
+        CWindowResizeEvent(size_t uWidth, size_t uHeight) : m_WindowSize{uWidth, uHeight} {}
 
         inline size_t GetHeight() const {
-            return m_uHeight;
+            return m_WindowSize.uWidth;
         }
 
         inline size_t GetWidth() const {
-            return m_uWidth;
+            return m_WindowSize.uHeight;
+        }
+
+        inline TWindowSize GetSize() const {
+            return m_WindowSize;
         }
 
         std::string ToString() const override {
-            return fmt::format("WindowResizeEvent: W={}; H={};", m_uWidth, m_uHeight);
+            return fmt::format("WindowResizeEvent: {};", m_WindowSize.ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::WindowResize)
 
     private:
-        size_t m_uWidth, m_uHeight;
+        TWindowSize m_WindowSize;
     };
 
     class OHENGINE_PUBLIC CWindowCloseEvent : public CEvent {
@@ -41,4 +45,4 @@ namespace OhEngine {
 
         EVENT_CLASS_TYPE(EEventType::WindowClose)
     };
-} // namespace OhEngine
+}  // namespace OhEngine

@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
 
-include(Doctest)
-
 # List all files containing tests.
 file(GLOB_RECURSE test_src_files CONFIGURE_DEPENDS "*.cpp")
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <OhEngine/Events/Input.hpp>
+#include <OhEngine/Core/Input.hpp>
 #include <OhEngine/Utils/Precompiled.hpp>
 
 namespace OhEngine {
@@ -24,7 +24,7 @@ namespace OhEngine {
         MouseMoved,
         MouseScrolled
     };
-
+//---------------------------------------
 #define EVENT_CLASS_TYPE(eType)                                                                                        \
     static constexpr EEventType GetStaticType() {                                                                      \
         return eType;                                                                                                  \
@@ -32,6 +32,17 @@ namespace OhEngine {
     virtual constexpr EEventType GetEventType() const override {                                                       \
         return GetStaticType();                                                                                        \
     }
+    //---------------------------------------
+
+    typedef struct TWindowSize {
+        size_t uWidth;
+        size_t uHeight;
+        std::string ToString() const {
+            return fmt::format("Width={}; Height={}", uWidth, uHeight);
+        }
+    } TWindowSize;
+
+    //---------------------------------------
     class OHENGINE_PRIVATE CEventDispatcher;
     class CEvent {
     public:
@@ -83,12 +94,13 @@ namespace OhEngine {
         EventState(EventState const &) = delete;
         void operator=(EventState const &) = delete;
 
-        static const IListView<Keyboard::SKey>& GetPressedKeys();
-        static const IListView<Mouse::Button>& GetPressedMouseButtons();
-        static const Mouse::SMousePosition& GetMousePosition();
+        static const IListView<Keyboard::SKey> &GetPressedKeys();
+        static const IListView<Mouse::Button> &GetPressedMouseButtons();
+        static const Mouse::SMousePosition &GetMousePosition();
+        static const TWindowSize &GetWindowSize();
 
     private:
-        [[maybe_unused]] static constexpr bool LOG_MODULE = true || ENABLE_ALL_LOGS;
+        [[maybe_unused]] static constexpr bool LOG_MODULE = true || OHENGINE_ENABLE_ALL_LOGS;
 
         // list of keys
         CList<Keyboard::SKey> m_lstPressedKeys;
@@ -96,6 +108,8 @@ namespace OhEngine {
         Mouse::SMousePosition m_MousePos;
         // list of mouse button pressed
         CList<Mouse::Button> m_lstPressedMouseButtons;
+        // window size
+        TWindowSize m_WindowSize;
 
         static EventState &Instance();
 
@@ -104,6 +118,6 @@ namespace OhEngine {
 
         void HandleEvent(CEvent &Event);
 
-        friend class CWindow; // Forward declaration to Window class
+        friend class CWindow;  // Forward declaration to Window class
     };
 }  // namespace OhEngine

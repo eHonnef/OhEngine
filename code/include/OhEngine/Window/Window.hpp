@@ -23,7 +23,7 @@ namespace OhEngine {
         }
 
     private:
-        static constexpr bool LOG_MODULE = true || ENABLE_ALL_LOGS;
+        static constexpr bool LOG_MODULE = true || OHENGINE_ENABLE_ALL_LOGS;
 
         [[maybe_unused]] IEventListener &m_EventsListener;
 

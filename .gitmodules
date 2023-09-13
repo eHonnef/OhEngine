@@ -7,3 +7,6 @@
 [submodule "thirdparty/SFML"]
 	path = thirdparty/SFML
 	url = https://github.com/SFML/SFML.git
+[submodule "thirdparty/doctest"]
+	path = thirdparty/doctest
+	url = https://github.com/doctest/doctest.git

@@ -55,7 +55,7 @@ namespace OhEngine {
 
     private:
         // hash(item_1) -> item_2
-        frozen::unordered_map<size_t, t_tItem_2, t_uSize> m_Dict_1_2;
+        frozen::unordered_map<size_t, t_tItem_2, t_uSize> m_Dict_1_2{};
         // hash(item_2) -> item_1
         frozen::unordered_map<size_t, t_tItem_1, t_uSize> m_Dict_2_1{};
 
@@ -84,21 +84,19 @@ namespace OhEngine {
 
         template<typename t_tKey, typename t_tItem>
         constexpr inline std::optional<t_tItem> AtImpl(const t_tKey &Key) const {
+            auto RtnVal = std::optional<t_tItem>{};
+
             if constexpr (std::is_same<t_tKey, t_tItem_1>()) {
-                if (m_Dict_1_2.contains(Hash(Key))) {
-                    return m_Dict_1_2.at(Hash(Key));
-                } else {
-                    return std::optional<t_tItem>{};
+                if (ContainsImpl(Key)) {
+                    RtnVal = m_Dict_1_2.at(Hash(Key));
                 }
             } else if constexpr (std::is_same<t_tKey, t_tItem_2>()) {
-                if (m_Dict_2_1.contains(Hash(Key))) {
-                    return m_Dict_2_1.at(Hash(Key));
-                } else {
-                    return std::optional<t_tItem>{};
+                if (ContainsImpl(Key)) {
+                    RtnVal = m_Dict_2_1.at(Hash(Key));
                 }
-            } else {
-                return std::optional<t_tItem>{};
             }
+
+            return RtnVal;
         }
 
         template<typename T>
@@ -107,10 +105,8 @@ namespace OhEngine {
             size_t i = 0;
             for (auto &&it: args) {
                 if constexpr (std::is_same<T, type_1_2>()) {
-                    //arr[i++] = std::make_pair(std::hash<t_tItem_1>{}(it.first), it.second);
                     arr[i++] = std::pair{Hash(it.first), it.second};
                 } else if constexpr (std::is_same<T, type_2_1>()) {
-                    //arr[i++] = std::make_pair(std::hash<t_tItem_2>{}(it.second), it.first);
                     arr[i++] = std::pair(Hash(it.second), it.first);
                 }
             }

@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <OhEngine/Application.hpp>
+#include <OhEngine/Core/Application.hpp>
 #include <OhEngine/Events/Events.hpp>
 #include <OhEngine/Utils/Logger.hpp>
 
