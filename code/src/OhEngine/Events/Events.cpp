@@ -65,8 +65,8 @@ namespace OhEngine {
 
                 for (size_t i = 0; i < m_lstPressedKeys.Size(); ++i) {
                     auto item = m_lstPressedKeys.At(i);
-                    if (item && item->KeyScanCode == CurEvent.GetKeyScanCode()) {
-                        m_lstPressedKeys.Pop(i);
+                    if (item && item->get().KeyScanCode == CurEvent.GetKeyScanCode()) {
+                        m_lstPressedKeys.PopAt(i);
                         bFound = true;
                         break;
                     }
@@ -101,7 +101,7 @@ namespace OhEngine {
                 for (size_t i = 0; i < m_lstPressedMouseButtons.Size(); ++i) {
                     auto item = m_lstPressedMouseButtons.At(i);
                     if (item && item.value() == CurEvent.GetMouseBtn()) {
-                        m_lstPressedMouseButtons.Pop(i);
+                        m_lstPressedMouseButtons.PopAt(i);
                         bFound = true;
                         break;
                     }

@@ -12,113 +12,104 @@
 #include <fmt/core.h>
 
 namespace OhEngine {
-#ifndef OHENGINE_ENABLE_ALL_LOGS
-#define OHENGINE_ENABLE_ALL_LOGS 0
-#endif
+
+    namespace LoggerConfig {
+        enum ELogLevel { llTrace, llDebug, llInfo, llImportant, llWarning, llError, llCritical, llFatal, llNone };
+
+        constexpr bool c_bEnableAllLogs = false;
+
 #ifndef NDEBUG
-#ifndef OHENGINE_LOGLEVEL
-#define OHENGINE_LOGLEVEL Logger::ELogLevel::llTrace
-#endif
+        constexpr ELogLevel c_eLogLevel = ELogLevel::llTrace;
 #else
-#define OHENGINE_LOGLEVEL Logger::ELogLevel::llNone
+        constexpr ELogLevel c_eLogLevel = ELogLevel::llNone;
 #endif
+    }  // namespace LoggerConfig
 
 #define OHENGINE_TRACE(...)                                                                                            \
-    if constexpr (LOG_MODULE) {                                                                                        \
+    if constexpr (c_bLogModule || LoggerConfig::c_bEnableAllLogs) {                                                    \
         Logger::Trace(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
 #define OHENGINE_DEBUG(...)                                                                                            \
-    if constexpr (LOG_MODULE) {                                                                                        \
+    if constexpr (c_bLogModule || LoggerConfig::c_bEnableAllLogs) {                                                    \
         Logger::Debug(__FILE__, __func__, __VA_ARGS__);                                                                \
     }
 #define OHENGINE_INFO(...)                                                                                             \
-    if constexpr (LOG_MODULE) {                                                                                        \
+    if constexpr (c_bLogModule || LoggerConfig::c_bEnableAllLogs) {                                                    \
         Logger::Info(__FILE__, __func__, __VA_ARGS__);                                                                 \
     }
 #define OHENGINE_IMPORTANT(...)                                                                                        \
-    if constexpr (LOG_MODULE) {                                                                                        \
+    if constexpr (c_bLogModule || LoggerConfig::c_bEnableAllLogs) {                                                    \
         Logger::Important(__FILE__, __func__, __VA_ARGS__);                                                            \
     }
 #define OHENGINE_WARNING(...)                                                                                          \
-    if constexpr (LOG_MODULE) {                                                                                        \
+    if constexpr (c_bLogModule || LoggerConfig::c_bEnableAllLogs) {                                                    \
         Logger::Warning(__FILE__, __func__, __VA_ARGS__);                                                              \
     }
-#define OHENGINE_ERROR(...)                                                                                            \
-    if constexpr (LOG_MODULE) {                                                                                        \
-        Logger::Error(__FILE__, __func__, __VA_ARGS__);                                                                \
-    }
-#define OHENGINE_CRITICAL(...)                                                                                         \
-    if constexpr (LOG_MODULE) {                                                                                        \
-        Logger::Critical(__FILE__, __func__, __VA_ARGS__);                                                             \
-    }
-#define OHENGINE_FATAL(...)                                                                                            \
-    if constexpr (LOG_MODULE) {                                                                                        \
-        Logger::Fatal(__FILE__, __func__, __VA_ARGS__);                                                                \
-    }
+#define OHENGINE_ERROR(...) Logger::Error(__FILE__, __func__, __VA_ARGS__);
+#define OHENGINE_CRITICAL(...) Logger::Critical(__FILE__, __func__, __VA_ARGS__);
+#define OHENGINE_FATAL(...) Logger::Fatal(__FILE__, __func__, __VA_ARGS__);
 
     class OHENGINE_PRIVATE Logger {
     public:
         template<typename... Args>
         static void Trace(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            Print<llTrace>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llTrace>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Debug(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            Print<llDebug>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llDebug>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Info(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                          const Args &...args) {
-            Print<llInfo>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llInfo>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Important(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                               const Args &...args) {
-            Print<llImportant>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llImportant>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Warning(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                             const Args &...args) {
-            Print<llWarning>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llWarning>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Error(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            Print<llError>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llError>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Critical(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                              const Args &...args) {
-            Print<llCritical>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llCritical>(strFileName, strFnName, str, args...);
         }
 
         template<typename... Args>
         static void Fatal(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            Print<llFatal>(strFileName, strFnName, str, args...);
+            Print<LoggerConfig::llFatal>(strFileName, strFnName, str, args...);
         }
 
     private:
-        enum ELogLevel { llTrace, llDebug, llInfo, llImportant, llWarning, llError, llCritical, llFatal, llNone };
-
         // if we later change to a thread (remove the static from the functions)
         // static Logger &GetInstance() {
         //     static Logger Instance{};
         //     return Instance;
         // }
 
-        template<ELogLevel LL, typename... Args>
+        template<LoggerConfig::ELogLevel LL, typename... Args>
         static void Print(const std::string &strFileName, const std::string &strFnName, const std::string &str,
                           const Args &...args) {
-            if constexpr (static_cast<size_t>(LL) >= OHENGINE_LOGLEVEL) {
+            if constexpr (static_cast<size_t>(LL) >= static_cast<size_t>(LoggerConfig::c_eLogLevel)) {
                 fmt::print(Color<LL>(),
                            FormatMessage<LL>(
                              strFileName.substr(strFileName.find_last_of('/', std::string::npos) == std::string::npos
@@ -135,7 +126,7 @@ namespace OhEngine {
             return fmt::format("{:%Y-%m-%d %H:%M:%S}", now);
         }
 
-        template<ELogLevel LL>
+        template<LoggerConfig::ELogLevel LL>
         static std::string FormatMessage(const std::string &strFileName, const std::string &strFnName,
                                          const std::string_view &strMessage) {
             // Formatting each message as below:
@@ -144,48 +135,48 @@ namespace OhEngine {
                                fmt::format("{}:{}", strFileName, strFnName), strMessage);
         }
 
-        template<ELogLevel LL>
+        template<LoggerConfig::ELogLevel LL>
         static constexpr fmt::text_style Color() {
-            if constexpr (LL == llTrace) {
+            if constexpr (LL == LoggerConfig::llTrace) {
                 return fmt::fg(fmt::color::light_gray);
-            } else if constexpr (LL == llDebug) {
+            } else if constexpr (LL == LoggerConfig::llDebug) {
                 return fmt::emphasis::bold | fmt::fg(fmt::color::dark_cyan);
-            } else if constexpr (LL == llInfo) {
+            } else if constexpr (LL == LoggerConfig::llInfo) {
                 return fmt::fg(fmt::color::white);
-            } else if constexpr (LL == llImportant) {
+            } else if constexpr (LL == LoggerConfig::llImportant) {
                 return fmt::fg(fmt::color::orange);
-            } else if constexpr (LL == llWarning) {
+            } else if constexpr (LL == LoggerConfig::llWarning) {
                 return fmt::emphasis::bold | fmt::fg(fmt::color::yellow);
-            } else if constexpr (LL == llError) {
+            } else if constexpr (LL == LoggerConfig::llError) {
                 return fmt::fg(fmt::color::red);
-            } else if constexpr (LL == llCritical) {
+            } else if constexpr (LL == LoggerConfig::llCritical) {
                 return fmt::emphasis::bold | fmt::bg(fmt::color::dark_red) | fmt::fg(fmt::color::white);
-            } else if constexpr (LL == llFatal) {
+            } else if constexpr (LL == LoggerConfig::llFatal) {
                 return fmt::emphasis::bold | fmt::bg(fmt::color::red) | fmt::fg(fmt::color::white);
             } else {
                 return {};
             }
         }
 
-        template<ELogLevel LL>
+        template<LoggerConfig::ELogLevel LL>
         static constexpr std::string LogLevelToString() {
-            if constexpr (LL == llTrace) {
+            if constexpr (LL == LoggerConfig::llTrace) {
                 return "TRACE";
-            } else if constexpr (LL == llDebug) {
+            } else if constexpr (LL == LoggerConfig::llDebug) {
                 return "DEBUG";
-            } else if constexpr (LL == llInfo) {
+            } else if constexpr (LL == LoggerConfig::llInfo) {
                 return "INFO";
-            } else if constexpr (LL == llImportant) {
+            } else if constexpr (LL == LoggerConfig::llImportant) {
                 return "IMPORTANT";
-            } else if constexpr (LL == llWarning) {
+            } else if constexpr (LL == LoggerConfig::llWarning) {
                 return "WARNING";
-            } else if constexpr (LL == llError) {
+            } else if constexpr (LL == LoggerConfig::llError) {
                 return "ERROR";
-            } else if constexpr (LL == llCritical) {
+            } else if constexpr (LL == LoggerConfig::llCritical) {
                 return "CRITICAL";
-            } else if constexpr (LL == llFatal) {
+            } else if constexpr (LL == LoggerConfig::llFatal) {
                 return "FATAL";
-            } else if constexpr (LL == llNone) {
+            } else if constexpr (LL == LoggerConfig::llNone) {
                 return "NONE";
             } else {
                 return "";

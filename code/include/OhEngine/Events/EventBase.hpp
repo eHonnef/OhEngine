@@ -100,7 +100,7 @@ namespace OhEngine {
         static const TWindowSize &GetWindowSize();
 
     private:
-        [[maybe_unused]] static constexpr bool LOG_MODULE = true || OHENGINE_ENABLE_ALL_LOGS;
+        [[maybe_unused]] static constexpr bool c_bLogModule = true;
 
         // list of keys
         CList<Keyboard::SKey> m_lstPressedKeys;

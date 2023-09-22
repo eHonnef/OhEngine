@@ -5,8 +5,7 @@
  */
 
 #include <OhEngine/Core/Application.hpp>
-#include <OhEngine/Events/Events.hpp>
-#include <OhEngine/Utils/Logger.hpp>
+#include <OhEngine/Utils/Precompiled.hpp>
 
 namespace OhEngine {
 
@@ -15,18 +14,26 @@ namespace OhEngine {
         return x(std::forward<decltype(PH1)>(PH1));                                                                    \
     }
 
-    CApplication::CApplication() {
-        m_bRunning = true;
-        // m_Window = new CWindow();
-    }
+    CApplication::CApplication() : m_bRunning(true), m_Window{*this}, m_SceneManager{}, m_Renderer{m_Window} {}
 
     CApplication::~CApplication() = default;
 
     void CApplication::Run() {
-        CWindow window{*this};
+        if (m_SceneManager.LoadModelFrom_WavefrontObjFile(
+              "/home/bhonnef/projects/OhEngine/app/Sample/african_head.obj")) {
+//            for (auto &model: m_SceneManager.m_Models) {
+//                OHENGINE_INFO(model.Name())
+//                OHENGINE_INFO(model.EdgesToString())
+//            }
+        } else {
+            OHENGINE_ERROR("Could not load wavefront obj file")
+        }
 
         while (m_bRunning) {
-            window.Update();
+            m_Window.ProcessEvents();
+            // update scene
+            // render
+            m_Renderer.Render(m_SceneManager.GetScene());
         }
     }
 
@@ -35,9 +42,11 @@ namespace OhEngine {
         d.Dispatch<CWindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
         d.Dispatch<CKeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
         d.Dispatch<CKeyReleasedEvent>(BIND_EVENT_FN(OnKeyReleased));
+        d.Dispatch<CWindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
     }
 
-    bool CApplication::OnWindowClose([[__maybe_unused__]] CWindowCloseEvent &e) {
+    bool CApplication::OnWindowClose(CWindowCloseEvent & /*e*/) {
+        OHENGINE_TRACE("Window close event: Shutting down")
         m_bRunning = false;
         return true;
     }
@@ -50,6 +59,11 @@ namespace OhEngine {
     bool CApplication::OnKeyReleased(CKeyReleasedEvent &e) {
         OHENGINE_TRACE(e.ToString())
         return true;
+    }
+
+    bool CApplication::OnWindowResize(CWindowResizeEvent &e) {
+        m_Renderer.OnResize(e.GetWidth(), e.GetHeight());
+        return false;
     }
 
 }  // namespace OhEngine

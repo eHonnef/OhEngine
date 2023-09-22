@@ -4,14 +4,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
+#include <OhEngine/Utils/Precompiled.hpp>
 #include <OhEngine/Window/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 namespace OhEngine {
     /**
@@ -19,14 +15,11 @@ namespace OhEngine {
      * This way we can hide the underlying windowing system and the user will not know about it.
      */
     class CWindow::CWindowImpl : private sf::RenderWindow {
-    private:
-        IEventListener &m_EventsListener;
-
     public:
-        CWindowImpl(unsigned int uWidth, unsigned int uHeight, const std::string &strName,
-                    IEventListener &EventsListener) :
-            sf::RenderWindow(sf::VideoMode(uWidth, uHeight), strName),
-            m_EventsListener{EventsListener} {
+        CWindowImpl(uint32_t uWidth, uint32_t uHeight, const std::string &strName, IEventListener &rEventsListener)
+            : sf::RenderWindow(sf::VideoMode(uWidth, uHeight), strName)
+            , m_rEventsListener{rEventsListener}
+            , m_Sprite{} {
             this->setVerticalSyncEnabled(true);  // this will use the monitor's refresh rate
 
             // @todo: check the status of key pressed + mouse position on window startup
@@ -34,25 +27,25 @@ namespace OhEngine {
             // Update the EventState with the window's startup size
             CWindowResizeEvent event{uWidth, uHeight};
             EventState::Instance().HandleEvent(event);
+            ResizeDrawArea(uWidth, uHeight);
         }
 
         void SetVSync(bool bEnable) {
             this->setVerticalSyncEnabled(bEnable);
         }
 
-        void Update() {
-            sf::CircleShape shape(100.f);
-            shape.setFillColor(sf::Color::Green);
-
+        void ProcessEvents() {
             sf::Event WindowEvent{};
+
             while (this->pollEvent(WindowEvent)) {
                 if (sf::Event::EventType::Closed == WindowEvent.type) {
                     CWindowCloseEvent event{};
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::Resized == WindowEvent.type) {
                     CWindowResizeEvent event{WindowEvent.size.width, WindowEvent.size.height};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
+                    ResizeDrawArea(WindowEvent.size.width, WindowEvent.size.height);
                 } else if (sf::Event::EventType::KeyPressed == WindowEvent.type) {
                     CKeyPressedEvent event{Keyboard::ToScancode(WindowEvent.key.scancode),
                                            Keyboard::ToKeycode(WindowEvent.key.code),
@@ -61,38 +54,59 @@ namespace OhEngine {
                                            WindowEvent.key.shift,
                                            WindowEvent.key.control};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::KeyReleased == WindowEvent.type) {
                     CKeyReleasedEvent event{Keyboard::ToScancode(WindowEvent.key.scancode),
                                             Keyboard::ToKeycode(WindowEvent.key.code)};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::MouseButtonPressed == WindowEvent.type) {
                     CMouseBtnPressedEvent event{Mouse::ToButton(WindowEvent.mouseButton.button),
                                                 static_cast<float>(WindowEvent.mouseButton.x),
                                                 static_cast<float>(WindowEvent.mouseButton.y)};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::MouseButtonReleased == WindowEvent.type) {
                     CMouseBtnReleasedEvent event{Mouse::ToButton(WindowEvent.mouseButton.button),
                                                  static_cast<float>(WindowEvent.mouseButton.x),
                                                  static_cast<float>(WindowEvent.mouseButton.y)};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::MouseMoved == WindowEvent.type) {
                     CMouseMovedEvent event{static_cast<float>(WindowEvent.mouseMove.x),
                                            static_cast<float>(WindowEvent.mouseMove.y)};
                     EventState::Instance().HandleEvent(event);
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::MouseWheelScrolled == WindowEvent.type) {
                     CMouseScrolledEvent event{static_cast<float>(WindowEvent.mouseWheelScroll.x),
                                               static_cast<float>(WindowEvent.mouseWheelScroll.y)};
-                    m_EventsListener.OnEvent(event);
+                    m_rEventsListener.OnEvent(event);
                 }
             }
-            this->clear();
-            this->draw(shape);
+        }
+
+        void ClearBuffers() {
+            this->clear(sf::Color::Black);
+        }
+
+        void SwapBuffer(const CBuffer &Buffer) {
+            m_pDrawArea->update(Buffer.Buffer());
+            this->draw(m_Sprite);
+        }
+
+        void Show() {
             this->display();
+        }
+
+    private:
+        IEventListener &m_rEventsListener;
+        sf::Sprite m_Sprite;
+        std::unique_ptr<sf::Texture> m_pDrawArea;
+
+        void ResizeDrawArea(size_t uWidth, size_t uHeight) {
+            m_pDrawArea = std::make_unique<sf::Texture>();
+            m_pDrawArea->create(static_cast<uint32_t>(uWidth), static_cast<uint32_t>(uHeight));
+            m_Sprite.setTexture(*m_pDrawArea);
         }
     };
 
@@ -100,15 +114,16 @@ namespace OhEngine {
      * Window facade class
      ******************************************************************************************************************/
 
-    CWindow::CWindow(IEventListener &EventsListener) :
-        m_EventsListener{EventsListener}, m_pImpl{std::make_unique<CWindowImpl>(800, 600, "blah", EventsListener)} {
+    CWindow::CWindow(IEventListener &rEventsListener)
+        : m_rEventsListener{rEventsListener}
+        , m_pImpl{std::make_unique<CWindowImpl>(800, 600, "blah", rEventsListener)} {
         m_bVSyncEnabled = true;
     }
 
     CWindow::~CWindow() = default;
 
-    void CWindow::Update() {
-        m_pImpl->Update();
+    void CWindow::ProcessEvents() {
+        m_pImpl->ProcessEvents();
     }
 
     void CWindow::SetVSync(bool bEnable) {
@@ -116,5 +131,17 @@ namespace OhEngine {
             m_pImpl->SetVSync(bEnable);
             m_bVSyncEnabled = bEnable;
         }
+    }
+
+    void CWindow::ClearBuffers() {
+        m_pImpl->ClearBuffers();
+    }
+
+    void CWindow::SwapBuffer(const CBuffer &Buffer) {
+        m_pImpl->SwapBuffer(Buffer);
+    }
+
+    void CWindow::Show() {
+        m_pImpl->Show();
     }
 }  // namespace OhEngine

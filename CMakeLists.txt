@@ -76,8 +76,14 @@ set(src_dir_engine ${src_dir}/OhEngine)
 set(include_dir ${code_dir}/include)
 # platform dependent code
 set(platform_dir ${src_dir}/Platform/SFML)
+# Renderer code
+set(renderer_dir ${src_dir}/Platform/Renderers/Software)
 
+# Platform independent engine source files
 file(GLOB_RECURSE src_files CONFIGURE_DEPENDS "${src_dir_engine}/*.cpp")
+
+# Renderer source files
+file(GLOB_RECURSE src_renderer_files CONFIGURE_DEPENDS "${renderer_dir}/*.cpp")
 
 # Platform dependent source files
 file(GLOB_RECURSE src_platform_files CONFIGURE_DEPENDS "${platform_dir}/*.cpp")
@@ -85,7 +91,7 @@ file(GLOB_RECURSE src_platform_files CONFIGURE_DEPENDS "${platform_dir}/*.cpp")
 # --------------------------------------------------------------------------------
 # Create code libraries
 # --------------------------------------------------------------------------------
-add_library(${PROJECT_NAME} OBJECT ${src_files} ${src_platform_files})
+add_library(${PROJECT_NAME} OBJECT ${src_files} ${src_platform_files} ${src_renderer_files})
 add_library(${namespace}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_include_directories(
@@ -94,20 +100,22 @@ target_include_directories(
         $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
 
-target_precompile_headers(${PROJECT_NAME} PUBLIC
-        ${include_dir}/OhEngine/Utils/Precompiled.hpp
-        ${include_dir}/OhEngine/Events/Events.hpp
-)
-
 # Including 3rd party items
 include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/thirdparty.cmake")
 target_set_warnings(fmt sfml-graphics DISABLE ALL)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/thirdparty/frozen/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/thirdparty/rapidobj/include)
 set_directory_properties(${CMAKE_CURRENT_LIST_DIR}/thirdparty/frozen PRIVATE -w)
 
 add_dependencies(${PROJECT_NAME} fmt::fmt sfml-graphics)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt sfml-graphics)
+
+# Precompiled headers
+target_precompile_headers(${PROJECT_NAME} PUBLIC
+        ${include_dir}/OhEngine/Utils/Precompiled.hpp
+        ${include_dir}/OhEngine/Events/Events.hpp
+)
 
 if (${cmake_build_type_tolower} STREQUAL "release" OR ${cmake_build_type_tolower} STREQUAL "relwithdebinfo")
     target_enable_lto(${PROJECT_NAME} optimized)

@@ -7,29 +7,33 @@
 #pragma once
 
 #include <OhEngine/Events/Events.hpp>
-#include <OhEngine/Utils/Logger.hpp>
+#include <OhEngine/Renderer/DrawableArea.hpp>
 
 namespace OhEngine {
-    class CWindow {
+    class CWindow : public IDrawableArea {
     public:
-        explicit CWindow(IEventListener &EventsListener);
-        virtual ~CWindow();
+        CWindow(IEventListener &rEventsListener);
+        ~CWindow() override;
 
-        void Update();
+        void ProcessEvents();
         void SetVSync(bool bEnable);
 
-        [[nodiscard]] inline bool IsVSyncEnabled() const {
+        inline bool IsVSyncEnabled() const {
             return m_bVSyncEnabled;
         }
 
     private:
-        static constexpr bool LOG_MODULE = true || OHENGINE_ENABLE_ALL_LOGS;
+        static constexpr bool LOG_MODULE = true;
 
-        [[maybe_unused]] IEventListener &m_EventsListener;
+        [[maybe_unused]] IEventListener &m_rEventsListener;
 
         bool m_bVSyncEnabled;
+
+        void ClearBuffers() override;
+        void SwapBuffer(const CBuffer &Buffer) override;
+        void Show() override;
 
         class CWindowImpl;
         std::unique_ptr<CWindowImpl> m_pImpl;
     };
-} // namespace OhEngine
+}  // namespace OhEngine
