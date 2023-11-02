@@ -26,7 +26,7 @@ namespace OhEngine {
         }
 
         std::string ToString() const override {
-            return fmt::format("WindowResizeEvent: {};", m_WindowSize.ToString());
+            return std::format("WindowResizeEvent: {};", m_WindowSize.ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::WindowResize)
@@ -40,7 +40,7 @@ namespace OhEngine {
         CWindowCloseEvent() = default;
 
         std::string ToString() const override {
-            return fmt::format("WindowCloseEvent;");
+            return std::format("WindowCloseEvent;");
         }
 
         EVENT_CLASS_TYPE(EEventType::WindowClose)

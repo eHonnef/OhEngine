@@ -4,44 +4,24 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <Buffers.hpp>  // From src/Platform/Renderers/Softwaresrc/Platform/Renderers/Software
 #include <OhEngine/Renderer/Renderer.hpp>
 
 namespace OhEngine {
 
     class CRenderer::CRendererImpl {
     public:
-        void Clear() {
+        CRendererImpl(IDisplayArea &rDisplayArea)
+            : m_rDisplayArea{rDisplayArea}
+            , m_Buffer{EventState::GetWindowSize().uWidth, EventState::GetWindowSize().uHeight, EColorMode::RGBA} {}
+
+        void Render(const CScene &Scene) {
             m_Buffer.Clear();
-        }
+            DrawWireframe(Scene);  // This should change to CModel instead of scene
 
-        const CBuffer &RenderedBuffer() const {
-            return m_Buffer;
-        }
-
-        void DrawWireframe(const CScene &Scene) {
-            for (const auto &Triangle: Scene.Model().Triangles()) {
-                auto v0 = Scene.Model().Vertices()[Triangle.v0];
-                auto v1 = Scene.Model().Vertices()[Triangle.v1];
-                auto v2 = Scene.Model().Vertices()[Triangle.v2];
-
-                if (v0 && v1 && v2) {
-                    auto w = static_cast<float>(EventState::GetWindowSize().uWidth);
-                    auto h = static_cast<float>(EventState::GetWindowSize().uHeight);
-
-                    int x0 = static_cast<int>((v0->Coord().X + 1.f) * w / 2.f);
-                    int y0 = static_cast<int>((v0->Coord().Y + 1.f) * h / 2.f);
-
-                    int x1 = static_cast<int>((v1->Coord().X + 1.f) * w / 2.f);
-                    int y1 = static_cast<int>((v1->Coord().Y + 1.f) * h / 2.f);
-
-                    int x2 = static_cast<int>((v2->Coord().X + 1.f) * w / 2.f);
-                    int y2 = static_cast<int>((v2->Coord().Y + 1.f) * h / 2.f);
-
-                    DrawLine(x0, y0, x1, y1);
-                    DrawLine(x1, y1, x2, y2);
-                    DrawLine(x2, y2, x0, y0);
-                }
-            }
+            m_rDisplayArea.ClearBuffers();
+            m_rDisplayArea.SwapPixelBuffer(m_Buffer.Get().data());
+            m_rDisplayArea.Show();
         }
 
         void OnResize(size_t uWidth, size_t uHeight) {
@@ -49,7 +29,32 @@ namespace OhEngine {
         }
 
     private:
+        IDisplayArea &m_rDisplayArea;
         CBuffer m_Buffer;
+
+        void DrawWireframe(const CScene &Scene) {
+            for (const auto &Triangle: Scene.Model().Triangles()) {
+                auto v0 = Scene.Model().Vertices()[Triangle.v0];
+                auto v1 = Scene.Model().Vertices()[Triangle.v1];
+                auto v2 = Scene.Model().Vertices()[Triangle.v2];
+
+                auto w = static_cast<float>(EventState::GetWindowSize().uWidth);
+                auto h = static_cast<float>(EventState::GetWindowSize().uHeight);
+
+                int x0 = static_cast<int>((v0.Coord().X + 1.f) * w / 2.f);
+                int y0 = static_cast<int>((v0.Coord().Y + 1.f) * h / 2.f);
+
+                int x1 = static_cast<int>((v1.Coord().X + 1.f) * w / 2.f);
+                int y1 = static_cast<int>((v1.Coord().Y + 1.f) * h / 2.f);
+
+                int x2 = static_cast<int>((v2.Coord().X + 1.f) * w / 2.f);
+                int y2 = static_cast<int>((v2.Coord().Y + 1.f) * h / 2.f);
+
+                DrawLine(x0, y0, x1, y1);
+                DrawLine(x1, y1, x2, y2);
+                DrawLine(x2, y2, x0, y0);
+            }
+        }
 
         void DrawLine(int x0, int y0, int x1, int y1) {
             bool steep = false;
@@ -86,9 +91,8 @@ namespace OhEngine {
      * Renderer facade class
      ******************************************************************************************************************/
 
-    CRenderer::CRenderer(IDrawableArea &DrawArea)
-        : m_rDrawArea{DrawArea}
-        , m_pImpl{std::make_unique<CRendererImpl>()} {}
+    CRenderer::CRenderer(IDisplayArea &rDisplayArea)
+        : m_pImpl{std::make_unique<CRendererImpl>(rDisplayArea)} {}
 
     CRenderer::~CRenderer() = default;
 
@@ -97,12 +101,6 @@ namespace OhEngine {
     }
 
     void CRenderer::Render(const CScene &Scene) {
-        m_pImpl->Clear();
-
-        m_pImpl->DrawWireframe(Scene);
-
-        m_rDrawArea.ClearBuffers();
-        m_rDrawArea.SwapBuffer(m_pImpl->RenderedBuffer());
-        m_rDrawArea.Show();
+        m_pImpl->Render(Scene);
     }
 }  // namespace OhEngine

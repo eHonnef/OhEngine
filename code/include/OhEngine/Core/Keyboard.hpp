@@ -290,7 +290,7 @@ namespace OhEngine {
                 ShiftKeyStatus(bShiftKeyStatus), CtrlKeyStatus(bCtrlKeyStatus) {}
 
             std::string ToString() const {
-                return fmt::format("KeyCode={:#x}; ScanCode={:#x}; Repeat={}; AltPressed={}; ShiftKey={}; CtrlKey={};",
+                return std::format("KeyCode={:#x}; ScanCode={:#x}; Repeat={}; AltPressed={}; ShiftKey={}; CtrlKey={};",
                                    static_cast<int>(KeyCode), static_cast<int>(KeyScanCode), RepeatCount, AltKeyStatus,
                                    ShiftKeyStatus, CtrlKeyStatus);
             }

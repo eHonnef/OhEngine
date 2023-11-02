@@ -14,13 +14,13 @@ namespace OhEngine {
         CSceneManager();
         bool LoadModelFrom_WavefrontObjFile(const std::string &strFilePath);
 
-        const IListView<CModel> &Models();
+        const TList<CModel> &Models() const;
 
         CScene GetScene();
 
     private:
         [[maybe_unused]] static constexpr bool c_bLogModule = true;
 
-        CList<CModel> m_lstModels;
+        TList<CModel> m_lstModels;
     };
 }  // namespace OhEngine

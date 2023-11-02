@@ -7,10 +7,10 @@
 #pragma once
 
 #include <OhEngine/Events/Events.hpp>
-#include <OhEngine/Renderer/DrawableArea.hpp>
+#include <OhEngine/Renderer/DisplayArea.hpp>
 
 namespace OhEngine {
-    class CWindow : public IDrawableArea {
+    class CWindow : public IDisplayArea {
     public:
         CWindow(IEventListener &rEventsListener);
         ~CWindow() override;
@@ -18,19 +18,15 @@ namespace OhEngine {
         void ProcessEvents();
         void SetVSync(bool bEnable);
 
-        inline bool IsVSyncEnabled() const {
-            return m_bVSyncEnabled;
-        }
+        inline bool IsVSyncEnabled() const;
 
     private:
         static constexpr bool LOG_MODULE = true;
 
-        [[maybe_unused]] IEventListener &m_rEventsListener;
-
         bool m_bVSyncEnabled;
 
         void ClearBuffers() override;
-        void SwapBuffer(const CBuffer &Buffer) override;
+        void SwapPixelBuffer(const uint8_t arPixelBuffer[]) override;
         void Show() override;
 
         class CWindowImpl;

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <OhEngine/Renderer/DrawableArea.hpp>
+#include <OhEngine/Renderer/DisplayArea.hpp>
 #include <OhEngine/Scene/Scene.hpp>
 
 namespace OhEngine {
     class CRenderer {
     public:
-        CRenderer(IDrawableArea &DrawArea);
+        CRenderer(IDisplayArea &rDisplayArea);
         ~CRenderer();
 
         void Render(const CScene &Scene);
@@ -20,7 +20,6 @@ namespace OhEngine {
 
     private:
         [[maybe_unused]] static constexpr bool c_bLogModule = true;
-        IDrawableArea &m_rDrawArea;
 
         class CRendererImpl;
         std::unique_ptr<CRendererImpl> m_pImpl;

@@ -11,7 +11,7 @@
 #include <OhEngine/Window/Window.hpp>
 
 namespace OhEngine {
-    class CApplication : IEventListener {
+    class CApplication : public IEventListener {
     public:
         CApplication();
         ~CApplication() override;
@@ -24,9 +24,9 @@ namespace OhEngine {
 
         bool m_bRunning;
 
-        CWindow m_Window;
-        CSceneManager m_SceneManager;
-        CRenderer m_Renderer;
+        std::unique_ptr<CWindow> m_Window;
+        std::unique_ptr<CSceneManager> m_SceneManager;
+        std::unique_ptr<CRenderer> m_Renderer;
 
         void OnEvent(CEvent &Event) override;
         bool OnWindowResize(CWindowResizeEvent &e);

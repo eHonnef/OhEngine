@@ -12,10 +12,9 @@
 #define OHENGINE_PRIVATE
 
 // Includes from the engine itself
-#include <OhEngine/Utils/Containers/Bimap.hpp>
-#include <OhEngine/Utils/Containers/Dictionary.hpp>
-#include <OhEngine/Utils/Containers/List.hpp>
+//#include <OhEngine/Utils/Containers/Bimap.hpp>
 #include <OhEngine/Utils/Logger.hpp>
+#include <OhEngine/Utils/Types.hpp>
 
 // 3rd party includes
 #include <rapidobj/rapidobj.hpp>

@@ -23,7 +23,7 @@ namespace OhEngine {
         }
 
         std::string ToString() const override {
-            return fmt::format("KeyPressedEvent: {}", m_KeyStruct.ToString());
+            return std::format("KeyPressedEvent: {}", m_KeyStruct.ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::KeyPressed)
@@ -38,7 +38,7 @@ namespace OhEngine {
             m_KeyScanCode{KeyScanCode}, m_KeyCode{KeyCode} {}
 
         std::string ToString() const override {
-            return fmt::format("KeyReleasedEvent: KeyCode={:#x}; KeyScanCode={:#x};", static_cast<int>(m_KeyCode),
+            return std::format("KeyReleasedEvent: KeyCode={:#x}; KeyScanCode={:#x};", static_cast<int>(m_KeyCode),
                                static_cast<int>(m_KeyScanCode));
         }
 

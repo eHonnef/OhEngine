@@ -19,31 +19,31 @@ namespace OhEngine {
         if (!ParsedObj.error) {
             for (auto &Shape: ParsedObj.shapes) {
                 CModel Model{Shape.name};
-                CDictionary<size_t, uint32_t> hshIndexed{};  // To check if vertex was already added to this model
+                TDictionary<size_t, uint32_t> hshIndexed{};  // To check if vertex was already added to this model
                 bool bInsert = true;
 
                 if (!Shape.mesh.indices.empty()) {
                     // Shape is a mesh
                     size_t uVertexIndex = 0;
                     for (auto &FaceSize: Shape.mesh.num_face_vertices) {
-                        CList<size_t> lstPolygonVerticesIndexes;
+                        TVector<size_t> lstPolygonVerticesIndexes;
                         for (size_t i = 0; i < FaceSize; ++i) {
                             auto uPointIndexBase = size_t(Shape.mesh.indices[uVertexIndex].position_index);
+
                             // Check if the vertex was already added into the model
-                            auto Item = hshIndexed.At(uPointIndexBase);
+                            if (!hshIndexed.contains(uPointIndexBase)) {
+                                float x = ParsedObj.attributes.positions[3 * uPointIndexBase + 0];
+                                float y = ParsedObj.attributes.positions[3 * uPointIndexBase + 1];
+                                float z = ParsedObj.attributes.positions[3 * uPointIndexBase + 2];
 
-                            if (!Item) {
-                                auto x = ParsedObj.attributes.positions[3 * uPointIndexBase + 0];
-                                auto y = ParsedObj.attributes.positions[3 * uPointIndexBase + 1];
-                                auto z = ParsedObj.attributes.positions[3 * uPointIndexBase + 2];
-
-                                auto uAddedVertexIndex = Model.Vertices().AddVertex({{x, y, z}});
-                                lstPolygonVerticesIndexes.Insert(uAddedVertexIndex);
-                                if (!hshIndexed.TryInsert(uPointIndexBase, uAddedVertexIndex)) {
-                                    OHENGINE_ERROR("Could not add vertex to hash. Duplicated?")
+                                Model.Vertices().emplace_back(x, y, z);
+                                auto uAddedVertexIndex = Model.Vertices().size() - 1;
+                                lstPolygonVerticesIndexes.push_back(uAddedVertexIndex);
+                                if (!hshIndexed.try_emplace(uPointIndexBase, uAddedVertexIndex).second) {
+                                    Logger::Error("Could not add vertex to hash. Duplicated?");
                                 }
                             } else {
-                                lstPolygonVerticesIndexes.Insert(*Item);
+                                lstPolygonVerticesIndexes.emplace_back(hshIndexed.at(uPointIndexBase));
                             }
                             uVertexIndex += 1;
                         }
@@ -52,34 +52,34 @@ namespace OhEngine {
                     }
                 } else if (!Shape.lines.indices.empty()) {
                     // @todo: shape is a set of polylines
-                    OHENGINE_TRACE("Not implemented")
+                    Logger::Warning("Not implemented");
                 } else if (!Shape.points.indices.empty()) {
                     // @todo: shape is a set of points
-                    OHENGINE_TRACE("Not implemented")
+                    Logger::Warning("Not implemented");
                 } else {
                     bInsert = false;
-                    OHENGINE_ERROR("Shape without definition? Shape will not load; ShapeName={}; FilePath={}",
-                                   Shape.name, strFilePath)
+                    Logger::Error("Shape without definition? Shape will not load; ShapeName={}; FilePath={}",
+                                   Shape.name, strFilePath);
                 }
 
                 if (bInsert) {
                     bResult = bResult || bInsert;  // Return true if at least one shape was loaded.
                     // Insert Model if not empty
-                    m_lstModels.Insert(std::move(Model));
+                    m_lstModels.emplace_back(std::move(Model));
                 }
             }
 
         } else {
-            OHENGINE_ERROR("Error parsing Wavefront Obj model; FilePath={}", strFilePath)
+            Logger::Error("Error parsing Wavefront Obj model; FilePath={}", strFilePath);
         }
         return bResult;
     }
 
-    const IListView<CModel> &CSceneManager::Models() {
+    const TList<CModel> &CSceneManager::Models() const {
         return m_lstModels;
     }
 
     CScene CSceneManager::GetScene() {
-        return {m_lstModels.At(0)->get()};
+        return {m_lstModels.front()};
     }
 }  // namespace OhEngine

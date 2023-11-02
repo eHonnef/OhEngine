@@ -6,15 +6,14 @@
 
 #pragma once
 
-#include <OhEngine/Renderer/Buffers.hpp>
-#include <OhEngine/Renderer/Vertex.hpp>
-
 namespace OhEngine {
-    class IDrawableArea {
+    class IDisplayArea {
     public:
-        virtual ~IDrawableArea() = default;
+        //
+        virtual ~IDisplayArea() = default;
         virtual void ClearBuffers() = 0;
-        virtual void SwapBuffer(const CBuffer& Buffer) = 0;
+        // @todo: only if we are using the software renderer
+        virtual void SwapPixelBuffer(const uint8_t arPixelBuffer[]) = 0;
         virtual void Show() = 0;
     };
 }

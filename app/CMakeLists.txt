@@ -11,14 +11,10 @@ add_dependencies(${target_name} OhEngine::OhEngine)
 
 # Link the executable to library (if it uses it).
 target_link_libraries(${target_name} PRIVATE OhEngine::OhEngine)
-target_set_warnings(
-  ${target_name}
-  ENABLE
-  ALL
-  AS_ERROR
-  ALL
-  DISABLE
-  Annoying) # Set warnings (if needed).
+target_set_warnings(${target_name}
+  ENABLE ALL
+  AS_ERROR ALL
+  DISABLE Annoying) # Set warnings (if needed).
 target_enable_lto(main optimized) # enable link-time-optimization if available
                                   # for non-debug configurations
 # ------------------------------------------------------------------------------------------------------------

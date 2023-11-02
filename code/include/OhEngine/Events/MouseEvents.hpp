@@ -26,7 +26,7 @@ namespace OhEngine {
         }
 
         std::string ToString() const override {
-            return fmt::format("MouseMovedEvent: [{:.4}, {:.4}];", GetX(), GetY());
+            return std::format("MouseMovedEvent: [{:.4}, {:.4}];", GetX(), GetY());
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseMoved)
@@ -48,7 +48,7 @@ namespace OhEngine {
         }
 
         std::string ToString() const override {
-            return fmt::format("MouseScrolledEvent: xOffset={:.4}; yOffset={:.4};", m_fOffsetX, m_fOffsetY);
+            return std::format("MouseScrolledEvent: xOffset={:.4}; yOffset={:.4};", m_fOffsetX, m_fOffsetY);
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseScrolled)
@@ -76,7 +76,7 @@ namespace OhEngine {
         }
 
         inline std::string ToString() const override {
-            return fmt::format("{}; Btn={:#x};", m_MousePos.ToString(), static_cast<int>(GetMouseBtn()));
+            return std::format("{}; Btn={:#x};", m_MousePos.ToString(), static_cast<int>(GetMouseBtn()));
         }
 
     protected:
@@ -91,7 +91,7 @@ namespace OhEngine {
         CMouseBtnPressedEvent(Mouse::Button Btn, float fX, float fY) : CMouseBtnEvent(Btn, fX, fY) {}
 
         std::string ToString() const override {
-            return fmt::format("MouseButtonPressedEvent: {}", CMouseBtnEvent::ToString());
+            return std::format("MouseButtonPressedEvent: {}", CMouseBtnEvent::ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseBtnPressed)
@@ -102,7 +102,7 @@ namespace OhEngine {
         CMouseBtnReleasedEvent(Mouse::Button Btn, float fX, float fY) : CMouseBtnEvent(Btn, fX, fY) {}
 
         std::string ToString() const override {
-            return fmt::format("MouseButtonReleasedEvent: {}", CMouseBtnEvent::ToString());
+            return std::format("MouseButtonReleasedEvent: {}", CMouseBtnEvent::ToString());
         }
 
         EVENT_CLASS_TYPE(EEventType::MouseBtnReleased)

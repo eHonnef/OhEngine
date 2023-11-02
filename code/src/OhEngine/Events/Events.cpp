@@ -8,11 +8,11 @@
 
 
 namespace OhEngine {
-    const IListView<Keyboard::SKey> &EventState::GetPressedKeys() {
+    const TList<Keyboard::SKey> &EventState::GetPressedKeys() {
         return EventState::Instance().m_lstPressedKeys;
     }
 
-    const IListView<Mouse::Button> &EventState::GetPressedMouseButtons() {
+    const TList<Mouse::Button> &EventState::GetPressedMouseButtons() {
         return EventState::Instance().m_lstPressedMouseButtons;
     }
 
@@ -26,11 +26,19 @@ namespace OhEngine {
 
     EventState &EventState::Instance() {
         // Singleton, will only be destroyed by the end of application
+#ifdef __clang__
+        //!<-- to avoid -Wexit-time-destructors -->
         [[clang::no_destroy]] static EventState StaticInstance{};
+#else
+        static EventState StaticInstance{};
+#endif
         return StaticInstance;
     }
 
-    EventState::EventState() : m_lstPressedKeys(), m_MousePos{0, 0}, m_WindowSize{0, 0} {}
+    EventState::EventState()
+        : m_lstPressedKeys()
+        , m_MousePos{0, 0}
+        , m_WindowSize{0, 0} {}
 
     EventState::~EventState() = default;
 
@@ -54,26 +62,29 @@ namespace OhEngine {
                 }
 
                 if (!bFound) {
-                    m_lstPressedKeys.Insert(Caster<CKeyPressedEvent>(Event).GetKeyProperties());
+                    m_lstPressedKeys.push_back(Caster<CKeyPressedEvent>(Event).GetKeyProperties());
                 }
 
                 break;
             }
             case EEventType::KeyReleased: {
-                bool bFound = false;
                 auto CurEvent = Caster<CKeyReleasedEvent>(Event);
 
-                for (size_t i = 0; i < m_lstPressedKeys.Size(); ++i) {
-                    auto item = m_lstPressedKeys.At(i);
-                    if (item && item->get().KeyScanCode == CurEvent.GetKeyScanCode()) {
-                        m_lstPressedKeys.PopAt(i);
-                        bFound = true;
-                        break;
-                    }
-                }
+                auto uCount = m_lstPressedKeys.remove_if([&](Keyboard::SKey &Key) {
+                    return Key.KeyScanCode == CurEvent.GetKeyScanCode();
+                });
 
-                if (!bFound) {
-                    OHENGINE_ERROR("Key release not found in the list. Event={}", CurEvent.ToString())
+                //                for (size_t i = 0; i < m_lstPressedKeys.size(); ++i) {
+                //                    auto item = m_lstPressedKeys.at(i);
+                //                    if (item && item->get().KeyScanCode == CurEvent.GetKeyScanCode()) {
+                //                        m_lstPressedKeys.erase(i);
+                //                        bFound = true;
+                //                        break;
+                //                    }
+                //                }
+
+                if (uCount == 0) {
+                    Logger::Error("Key release not found in the list. Event={}", CurEvent.ToString());
                 }
                 break;
             }
@@ -90,25 +101,28 @@ namespace OhEngine {
                 }
 
                 if (!bFound) {
-                    m_lstPressedMouseButtons.Insert(CurBtn);
+                    m_lstPressedMouseButtons.push_back(CurBtn);
                 }
                 break;
             }
             case EEventType::MouseBtnReleased: {
-                bool bFound = false;
+                //                bool bFound = false;
                 auto CurEvent = Caster<CMouseBtnReleasedEvent>(Event);
+                auto uCount = m_lstPressedMouseButtons.remove_if([&](Mouse::Button &Btn) {
+                    return Btn == CurEvent.GetMouseBtn();
+                });
 
-                for (size_t i = 0; i < m_lstPressedMouseButtons.Size(); ++i) {
-                    auto item = m_lstPressedMouseButtons.At(i);
-                    if (item && item.value() == CurEvent.GetMouseBtn()) {
-                        m_lstPressedMouseButtons.PopAt(i);
-                        bFound = true;
-                        break;
-                    }
-                }
+                //                for (size_t i = 0; i < m_lstPressedMouseButtons.Size(); ++i) {
+                //                    auto item = m_lstPressedMouseButtons.At(i);
+                //                    if (item && item.value() == CurEvent.GetMouseBtn()) {
+                //                        m_lstPressedMouseButtons.PopAt(i);
+                //                        bFound = true;
+                //                        break;
+                //                    }
+                //                }
 
-                if (!bFound) {
-                    OHENGINE_ERROR("Mouse button release not found in the list. Event={}", CurEvent.ToString())
+                if (uCount == 0) {
+                    Logger::Error("Mouse button release not found in the list. Event={}", CurEvent.ToString());
                 }
 
                 break;
@@ -122,7 +136,7 @@ namespace OhEngine {
                 break;
             }
             default:
-                OHENGINE_TRACE("Event not handled: {}", Event.ToString())
+                Logger::Error("Event not handled: {}", Event.ToString());
                 break;
         }
     }

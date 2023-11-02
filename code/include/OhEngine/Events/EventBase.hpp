@@ -38,7 +38,7 @@ namespace OhEngine {
         size_t uWidth;
         size_t uHeight;
         std::string ToString() const {
-            return fmt::format("Width={}; Height={}", uWidth, uHeight);
+            return std::format("Width={}; Height={}", uWidth, uHeight);
         }
     } TWindowSize;
 
@@ -94,8 +94,8 @@ namespace OhEngine {
         EventState(EventState const &) = delete;
         void operator=(EventState const &) = delete;
 
-        static const IListView<Keyboard::SKey> &GetPressedKeys();
-        static const IListView<Mouse::Button> &GetPressedMouseButtons();
+        static const TList<Keyboard::SKey> &GetPressedKeys();
+        static const TList<Mouse::Button> &GetPressedMouseButtons();
         static const Mouse::SMousePosition &GetMousePosition();
         static const TWindowSize &GetWindowSize();
 
@@ -103,11 +103,11 @@ namespace OhEngine {
         [[maybe_unused]] static constexpr bool c_bLogModule = true;
 
         // list of keys
-        CList<Keyboard::SKey> m_lstPressedKeys;
+        TList<Keyboard::SKey> m_lstPressedKeys;
         // mouse position
         Mouse::SMousePosition m_MousePos;
         // list of mouse button pressed
-        CList<Mouse::Button> m_lstPressedMouseButtons;
+        TList<Mouse::Button> m_lstPressedMouseButtons;
         // window size
         TWindowSize m_WindowSize;
 

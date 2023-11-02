@@ -9,8 +9,10 @@
 class CSample : public OhEngine::CApplication {
 public:
     CSample() : OhEngine::CApplication() {}
-    ~CSample() override = default;
+    ~CSample() override;
 };
+
+CSample::~CSample() = default;
 
 OhEngine::CApplication *OhEngine::CreateApplication() {
     return new CSample();

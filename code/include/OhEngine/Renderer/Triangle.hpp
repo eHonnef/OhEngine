@@ -15,24 +15,5 @@ namespace OhEngine {
         uint32_t v2;
     } TTriangle;
 
-    class CTriangles {
-    private:
-        using TContainer = CList<TTriangle>;
-        using TConstIterator = typename TContainer::TConstIterator;
-        using TIterator = typename TContainer::TIterator;
-
-    public:
-        void IndexTriangle(uint32_t v0, uint32_t v1, uint32_t v2);
-        void IndexTriangle(TTriangle &&Triangle);
-
-        TConstOptRef<TTriangle> Get(size_t uIndex);
-
-        TConstIterator begin() const;
-        TConstIterator end() const;
-        TIterator begin();
-        TIterator end();
-
-    private:
-        TContainer m_lstTriangles;
-    };
+    using TTriangles = TVector<TTriangle>;
 }

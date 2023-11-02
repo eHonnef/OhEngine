@@ -26,7 +26,7 @@ namespace OhEngine {
             float x;
             float y;
             std::string ToString() const {
-                return fmt::format("Mouse_X={:.4}; Mouse_Y={:.4}", x, y);
+                return std::format("Mouse_X={:.4}; Mouse_Y={:.4}", x, y);
             }
             SMousePosition(float fX, float fY) : x{fX}, y{fY} {}
         };

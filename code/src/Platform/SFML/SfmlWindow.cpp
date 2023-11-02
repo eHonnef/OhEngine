@@ -7,7 +7,6 @@
 #include <OhEngine/Utils/Precompiled.hpp>
 #include <OhEngine/Window/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <memory>
 
 namespace OhEngine {
     /**
@@ -43,9 +42,9 @@ namespace OhEngine {
                     m_rEventsListener.OnEvent(event);
                 } else if (sf::Event::EventType::Resized == WindowEvent.type) {
                     CWindowResizeEvent event{WindowEvent.size.width, WindowEvent.size.height};
+                    ResizeDrawArea(WindowEvent.size.width, WindowEvent.size.height);
                     EventState::Instance().HandleEvent(event);
                     m_rEventsListener.OnEvent(event);
-                    ResizeDrawArea(WindowEvent.size.width, WindowEvent.size.height);
                 } else if (sf::Event::EventType::KeyPressed == WindowEvent.type) {
                     CKeyPressedEvent event{Keyboard::ToScancode(WindowEvent.key.scancode),
                                            Keyboard::ToKeycode(WindowEvent.key.code),
@@ -89,8 +88,8 @@ namespace OhEngine {
             this->clear(sf::Color::Black);
         }
 
-        void SwapBuffer(const CBuffer &Buffer) {
-            m_pDrawArea->update(Buffer.Buffer());
+        void SwapPixelBuffer(const uint8_t arPixelBuffer[]) {
+            m_pDrawArea->update(arPixelBuffer);
             this->draw(m_Sprite);
         }
 
@@ -100,8 +99,8 @@ namespace OhEngine {
 
     private:
         IEventListener &m_rEventsListener;
-        sf::Sprite m_Sprite;
         std::unique_ptr<sf::Texture> m_pDrawArea;
+        sf::Sprite m_Sprite;
 
         void ResizeDrawArea(size_t uWidth, size_t uHeight) {
             m_pDrawArea = std::make_unique<sf::Texture>();
@@ -115,8 +114,7 @@ namespace OhEngine {
      ******************************************************************************************************************/
 
     CWindow::CWindow(IEventListener &rEventsListener)
-        : m_rEventsListener{rEventsListener}
-        , m_pImpl{std::make_unique<CWindowImpl>(800, 600, "blah", rEventsListener)} {
+        : m_pImpl{std::make_unique<CWindowImpl>(800, 600, "blah", rEventsListener)} {
         m_bVSyncEnabled = true;
     }
 
@@ -127,6 +125,7 @@ namespace OhEngine {
     }
 
     void CWindow::SetVSync(bool bEnable) {
+        //@todo: improve this vsync logic
         if (m_bVSyncEnabled != bEnable) {
             m_pImpl->SetVSync(bEnable);
             m_bVSyncEnabled = bEnable;
@@ -137,11 +136,15 @@ namespace OhEngine {
         m_pImpl->ClearBuffers();
     }
 
-    void CWindow::SwapBuffer(const CBuffer &Buffer) {
-        m_pImpl->SwapBuffer(Buffer);
+    void CWindow::SwapPixelBuffer(const uint8_t arPixelBuffer[]) {
+        m_pImpl->SwapPixelBuffer(arPixelBuffer);
     }
 
     void CWindow::Show() {
         m_pImpl->Show();
+    }
+
+    bool CWindow::IsVSyncEnabled() const {
+        return m_bVSyncEnabled;
     }
 }  // namespace OhEngine

@@ -15,16 +15,20 @@ namespace OhEngine {
         float Y;
         float Z;
 
-        TPoint(float x, float y, float z) : X(x), Y(y), Z(z) {}
+        TPoint(float x, float y, float z)
+            : X(x)
+            , Y(y)
+            , Z(z) {}
 
         std::string ToString() const {
-            return fmt::format("Point: X={:.4}; Y={:.4}; Z={:.4}", X, Y, Z);
+            return std::format("Point: X={:.4}; Y={:.4}; Z={:.4}", X, Y, Z);
         }
     } TPoint;
 
     class OHENGINE_PRIVATE CVertex {
     public:
         CVertex(const TPoint &Point);
+        CVertex(float fx, float fy, float fz);
 
         const TPoint &Coord() const;
         std::string ToString() const;
@@ -33,30 +37,5 @@ namespace OhEngine {
         TPoint m_Point;
     };
 
-    class OHENGINE_PRIVATE CVertices {
-    private:
-        using TContainer = CList<CVertex>;
-        using TConstIterator = typename TContainer::TConstIterator;
-        using TIterator = typename TContainer::TIterator;
-
-    public:
-        TConstIterator begin() const;
-        TConstIterator end() const;
-        TIterator begin();
-        TIterator end();
-
-        std::optional<CVertex> operator[](size_t uIndex) const;
-
-        size_t Size() const;
-
-        /**
-         * Insert a Vertex (move operation) inside the Vertex array and returns the Vertex index.
-         * @param Vertex The object to be inserted.
-         * @return The added vertex index.
-         */
-        uint32_t AddVertex(CVertex &&Vertex);
-
-    private:
-        TContainer m_lstVertices;
-    };
+    using TVertices = TVector<CVertex>;
 }  // namespace OhEngine

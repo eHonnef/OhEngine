@@ -9,6 +9,7 @@
 # --------------------------------------------------------------------------------
 # Submodules dependencies
 # --------------------------------------------------------------------------------
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/fmt EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/SFML EXCLUDE_FROM_ALL)
+target_set_warnings(sfml-graphics DISABLE ALL)
+
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/doctest EXCLUDE_FROM_ALL)

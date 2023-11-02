@@ -15,19 +15,19 @@ namespace OhEngine {
         CModel();
         CModel(std::string  strName);
 
-        void AddPolygon(const CList<size_t>& lstPolygon);
+        void AddPolygon(const TVector<size_t>& lstPolygon);
 
         const std::string &Name() const;
-        CVertices &Vertices();
-        CTriangles &Triangles();
-        const CVertices &Vertices() const;
-        const CTriangles &Triangles() const;
+        TVertices &Vertices();
+        TTriangles &Triangles();
+        const TVertices &Vertices() const;
+        const TTriangles &Triangles() const;
 
     private:
         [[maybe_unused]] static constexpr bool c_bLogModule = true;
 
         std::string m_strName;
-        CVertices m_Vertices;
-        CTriangles m_Triangles;
+        TVertices m_Vertices;
+        TTriangles m_Triangles;
     };
 }  // namespace OhEngine
